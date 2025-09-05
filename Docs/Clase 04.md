@@ -15,8 +15,8 @@ En POST los datos son empaquetados, y en GET se envian por la URL.
 ### Crear Proyecto
 
 1. New Proyect > Java with Ant > Java web > Web Application
-2. [](<assets/Pasted image 20250903171709.png>)
-3. ![[Pasted image 20250903171753.png]]
+2. ![](<assets/Pasted image 20250903171709.png>)
+3. ![](<assets/Pasted image 20250903171753.png>)
 4. Por ahora darle Finish, sin seleccionar Spring MVC o JSF.
 
 ### Modificar el Proyecto
