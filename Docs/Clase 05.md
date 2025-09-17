@@ -191,4 +191,17 @@ Como se usaria en un JSP:
 
 `property="*"` es para usar todos los getters y setters definidos, cuando alguna propiedad no define ambos, sino se puede definir una lista de propiedades separadas por coma, indicando por ejemplo getItems, setItem, etc. No sirve usar el nombre del atributo para que tome automáticamente set y get.
 
-El javabean permite trabajar de forma dinamica sin recargar la pagina, por ejemplo con AJAX.???
+## Alcance de los JavaBeans
+
+El javabean permite trabajar de forma dinámica sin recargar la pagina y puede tener diversos alcances (donde se guarda el estado del bean).
+
+![alt text](assets/AlcanceJavaBean.png)
+
+Request es el alcance mas chico, se pierde al recargar la pagina.
+Page es el alcance del JSP, se pierde al cambiar de pagina.
+Session es el alcance por defecto y se ve en dos browsers distintos.
+Application es el alcance mas grande, se comparte entre todos los usuarios.
+
+
+Deberes:
+- modificar el ejercicio de alcance, permitiendo mandar el nombre, que se guarde en una coleccion de usuarios y se muestre junto con la cantidad de visitas.
