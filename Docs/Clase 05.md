@@ -1,5 +1,12 @@
 # Clase 05
 
+## Que se ha visto y verá
+
+- Html5, CSS3 y JavaScript
+- Servlets
+- JSP
+- JavaBeans
+
 ## JSP
 
 JavaServer Pages (JSP) es una tecnología que ayuda a los desarrolladores a crear contenido dinámico para la web. JSP permite insertar código Java en páginas HTML, lo que facilita la creación de aplicaciones web interactivas.
@@ -163,3 +170,25 @@ Etiquetas de formato:
 ![alt text](assets/EtiquetasFmt.png)
 
 ![alt text](assets/EjemploEtiquetasFmt.png)
+
+## Componentes JavaBeans
+
+Beans en java se usan para encapsular datos y lógica de negocio en una clase reutilizable. Un JavaBean **es una clase Java** que sigue ciertas convenciones que hay que respetar:
+- Tiene al menos un constructor público sin argumentos.
+- Las variables de instancia o propiedades deben ser privadas.
+- Para acceder a los valores de las propiedades hay que hacerlo por medio de métodos getter y setter públicos.
+- Implementa la interfaz `Serializable`.
+
+Ejemplo parcial: Colección de libros.
+
+![alt text](assets/EjemploJavaBean.png)
+
+El constructor por defecto se añade automáticamente si no se define ningún constructor.
+
+Como se usaria en un JSP:
+
+![alt text](assets/EjemploJavaBeanUsoJSP.png)
+
+`property="*"` es para usar todos los getters y setters definidos, cuando alguna propiedad no define ambos, sino se puede definir una lista de propiedades separadas por coma, indicando por ejemplo getItems, setItem, etc. No sirve usar el nombre del atributo para que tome automáticamente set y get.
+
+El javabean permite trabajar de forma dinamica sin recargar la pagina, por ejemplo con AJAX.???
