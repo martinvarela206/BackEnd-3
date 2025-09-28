@@ -1,16 +1,6 @@
 # Instalación
 
-## Apps Web con Java with Ant
 
-La cátedra de Backend 3 utiliza Java+Tomcat+Netbeans para aprender a desarrollar Aplicaciones Web en Java con Ant.
-
-Ant es una herramienta que automatiza la compilacion, el empaquetado de archivos WAR y permite ejecutar test y desplegar aplicaciones. Otras herramientas mas actuales son Maven y Gradle.
-
-Ant se incluye con Netbeans, por eso no es necesario instalarlo, pero si se quiere trabajar con Ant usando VSCode o IntelliJ, si habra que descargarlo.
-
-<https://youtu.be/5p82gwr9MWk>
-
-Tomcat es un servidor para aplicaciones Java basadas en Servlets y soporte para JSP, el cual es mas ligero que GlassFish o WildFly.
 
 ## Instalación en Windows
 
