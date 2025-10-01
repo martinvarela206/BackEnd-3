@@ -29,7 +29,14 @@ Internet ofrece muchos servicios, cada uno con su propio protocolo:
 **Explicación:**
 Cada servicio usa un protocolo diferente para funcionar correctamente y comunicarse entre computadoras.
 
----
+**Relación entre TCP/IP y los protocolos de servicios:**
+La mayoría de estos protocolos (como SMTP, FTP, IRC, HTTP, SSH, etc.) funcionan sobre la suite TCP/IP. TCP/IP es el conjunto de protocolos base que permite la comunicación en Internet. Los protocolos de servicios utilizan TCP o UDP (que forman parte de TCP/IP) para transmitir datos entre dispositivos:
+
+- **TCP (Transmission Control Protocol):** Proporciona una conexión fiable y ordenada. Protocolos como SMTP, FTP, IRC y HTTP usan TCP para asegurar que los datos lleguen completos y en el orden correcto.
+- **UDP (User Datagram Protocol):** Proporciona una comunicación más rápida pero menos fiable, usado por algunos servicios como VoIP o juegos en línea.
+
+En resumen, los protocolos de servicios dependen de TCP/IP para transportar la información a través de la red, aprovechando sus mecanismos de direccionamiento y transmisión de datos.
+
 
 ## 3. La Web: HTTP sobre TCP/IP
 

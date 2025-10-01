@@ -8,7 +8,7 @@ Bienvenidos a la primera clase de Backend. Hoy vamos a explorar cómo ha evoluci
 
 ### 1.1. Modelo de Simple Nivel
 
-En los inicios de la informática, las aplicaciones funcionaban en terminales bobas (dispositivos muy básicos que no tenian capacidad de procesamiento) conectadas a un mainframe (la computadora real que hacía todo el procesamiento). Todo el procesamiento (presentación, lógica de negocio y acceso a datos) ocurría en un solo lugar.
+En los inicios de la informática, las aplicaciones funcionaban en terminales bobas (dispositivos muy básicos que no tenían capacidad de procesamiento) conectadas a un mainframe (la computadora real que hacía todo el procesamiento). Todo el procesamiento (presentación, lógica de negocio y acceso a datos) ocurría en un solo lugar.
 
 **Ventajas:**
 - Fácil de mantener la consistencia de los datos.
