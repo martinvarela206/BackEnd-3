@@ -188,10 +188,3 @@ Los JavaBeans permiten separar la lógica de negocio del diseño de la página, 
 El alcance define cuánto tiempo y dónde se puede usar el bean en la aplicación web.
 
 ---
-
-**Recomendación:**
-Repasa cada concepto y experimenta creando páginas JSP que usen JavaBeans y JSTL. En las próximas clases veremos ejemplos prácticos y ejercicios para afianzar estos conocimientos.
-
----
-
-¡Nos vemos en la próxima clase!

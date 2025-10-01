@@ -93,10 +93,3 @@ El contenedor se encarga de crear, inicializar, ejecutar y destruir el Servlet s
 Estos métodos permiten controlar cómo el Servlet responde a las peticiones y gestiona sus recursos.
 
 ---
-
-**Recomendación:**
-Repasa cada concepto y observa cómo los Servlets procesan las peticiones y respuestas. En las próximas clases veremos ejemplos prácticos y ejercicios para afianzar estos conocimientos.
-
----
-
-¡Nos vemos en la próxima clase!

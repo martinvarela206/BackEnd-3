@@ -46,6 +46,15 @@ Cada componente tiene una función específica y trabaja en conjunto para crear 
 
 ## 5. Niveles de la Arquitectura Java EE
 
+```mermaid
+graph TD;
+	nc[Nivel Cliente]
+	ns[Nivel web y Nivel negocio]
+	nb[Nivel EIS o BBDD]
+	nc ---> ns
+	ns ---> nb
+```
+
 - **Nivel Cliente:** Donde está el usuario (aplicación cliente o web).
 - **Nivel Web:** Servidor que maneja la interfaz (JSF, JSP).
 - **Nivel Negocio:** Servidor que maneja la lógica (JavaBeans).
@@ -135,9 +144,3 @@ Estos pasos aseguran que la aplicación esté lista para funcionar en cualquier 
 
 ---
 
-**Recomendación:**
-Repasa cada concepto y observa cómo se relacionan los componentes y contenedores. En las próximas clases veremos ejemplos prácticos y ejercicios para afianzar estos conocimientos.
-
----
-
-¡Nos vemos en la próxima clase!

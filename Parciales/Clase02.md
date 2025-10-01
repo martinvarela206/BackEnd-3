@@ -186,9 +186,3 @@ Usar id y class ayuda a organizar y personalizar los elementos de la página, fa
 
 ---
 
-**Recomendación:**
-Repasa cada concepto y experimenta creando una página sencilla usando HTML, CSS y JavaScript. En las próximas clases veremos ejemplos prácticos y ejercicios para afianzar estos conocimientos.
-
----
-
-¡Nos vemos en la próxima clase!

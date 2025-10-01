@@ -267,11 +267,3 @@ Estos términos son fundamentales para entender la jerga técnica en el desarrol
 
 La evolución de la web y sus arquitecturas nos muestra la importancia de separar responsabilidades y usar estándares abiertos. Esto permite crear aplicaciones escalables, mantenibles y flexibles, preparándonos para los desafíos del desarrollo backend moderno.
 
----
-
-**Recomendación:**
-Repasa estos conceptos y términos. En las próximas clases profundizaremos en cada arquitectura y tecnología, y veremos ejemplos prácticos de cómo se aplican en el desarrollo profesional.
-
----
-
-¡Nos vemos en la próxima clase!
