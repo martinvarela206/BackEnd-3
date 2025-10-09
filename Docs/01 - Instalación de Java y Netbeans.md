@@ -4,9 +4,9 @@
 
 ## Instalación en Windows
 
-- Instalar JDK 24: Ingresar a <https://www.oracle.com/latam/java/technologies/downloads/>, seleccionar Windows y descargar el x64 Installer.
+- Instalar JDK 25 (LTS): Ingresar a <https://www.oracle.com/latam/java/technologies/downloads/>, seleccionar Windows y descargar el x64 Installer.
 - Instalar NetBeans 25: Ingresar a <https://netbeans.apache.org/front/main/download/nb25/>, descargar el exe.
-- Instalar Tomcat: Ingresar a <https://tomcat.apache.org/download-11.cgi> y descargar el zip, si se descarga Windows Service Installer, este se instalara en una carpeta con permisos de administrador y luego NetBeans no podrá acceder.
+- Instalar Tomcat 11: Ingresar a <https://tomcat.apache.org/download-11.cgi> y descargar el zip, si se descarga Windows Service Installer, este se instalara en una carpeta con permisos de administrador y luego NetBeans no podrá acceder.
 
 > Esto último, también sucede en Linux, si se instala tomcat en /opt, es mejor instalarlo en /home/usuario o /tmp.
 
