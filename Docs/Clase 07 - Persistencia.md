@@ -80,6 +80,28 @@ Y probar.
 
 ## Ahora hacerlo para Maven
 
+1. Crear el proyecto con maven
+2. Copiar servlets y jsp.
+3. Añadir Entity Clases From Database
+4. Editar el `src/main/resources/META-INF/persistence.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0"
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+                                 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <persistence-unit name="AlumnosPU" transaction-type="JTA">
+    <jta-data-source>java:app/DBAlumno</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties/>
+  </persistence-unit>
+</persistence>
+```
+
+Esto debería funcionar.
+
 <https://youtu.be/pd5kVcJTf10>
 
 
