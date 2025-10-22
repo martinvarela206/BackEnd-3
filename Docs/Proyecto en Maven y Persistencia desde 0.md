@@ -186,7 +186,7 @@ Ademas de las entidades para las tablas, se ha creado una entidad mas, llamada *
 
 ## Configurar persistence.xml
 
-Esto se hace siempre a mano.
+Ahora hay que configurar la unidad de persistencia, para que utilice el JDNI creado en Glassfish.
 
 En `src/main/resources/META-INF/persistence.xml`:
 
@@ -202,6 +202,9 @@ En `src/main/resources/META-INF/persistence.xml`:
   </persistence-unit>
 </persistence>
 ```
+
+> [!INFO]
+> En lugar de hacerlo a mano, siguiendo el siguiente orden, el `persistence.xml` se genera automaticamente. Primero borrar el `persistence.xml` (si se hizo lo del glassfish-resources.xml, tambien borrarlo). Luego el Pool en el servidor, luego el DataSource, y finalmente al crear las entidades, se vuelve a generar el `persistence.xml`.
 
 ## Probar listar las Materias
 
