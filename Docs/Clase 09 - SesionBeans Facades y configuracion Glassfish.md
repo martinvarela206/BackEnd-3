@@ -64,3 +64,78 @@ La combinacion de EJB y entidades JPA se organiza en las Facades.
 
 A partir de los EJB, el cliente ya no trabaja directamente con las entidades, son los EJB los que trabajan con las entidades, y el cliente trabaja con los EJB.
 
+## Que genera el JPA
+
+### Relacion UNO A UNO
+
+> [!WARNING]
+> Este ejemplo no esta en el PDF, pero es básico.
+
+```mermaid
+graph LR
+   Cliente -- 1..1 --> Domicilio
+```
+
+En JPA se genera lo siguinete:
+
+```java
+@Entity
+public class Cliente {
+      @Id @GeneratedValue
+      private Long id;
+      private String nombre;
+      @OneToOne (fetch=FetchType.LAZY)
+      @JoinColumn(name="domicilio_id", nullable=false)
+      private Domicilio domicilio;
+      // getters y setters
+}
+```
+
+En este código, el atributo domicilio representa una relación uno a uno entre la entidad Cliente y la entidad Domicilio.
+
+Las directivas hacen lo siguiente:
+
+`@OneToOne(fetch=FetchType.LAZY)`: Indica que la relación entre Cliente y Domicilio es de uno a uno. El parámetro fetch=FetchType.LAZY significa que el objeto Domicilio asociado no se carga automáticamente al consultar un Cliente, sino solo cuando se accede explícitamente a él.
+`@JoinColumn(name="domicilio_id", nullable=false)`: Especifica que la columna domicilio_id en la tabla Cliente será la clave foránea que referencia a la tabla Domicilio. El atributo nullable=false indica que este campo no puede ser nulo, es decir, todo cliente debe tener un domicilio asociado.
+En resumen, cada instancia de Cliente está asociada a una única instancia de Domicilio, y la relación se gestiona mediante la columna domicilio_id en la base de datos.
+
+### Relacion UNO A MUCHOS
+
+Ver `@OneToMany`. Una facultad se relaciona con muchas carreras.
+
+CascadeType.ALL: Si se elimina la facultad, se eliminan todas las carreras asociadas. El efecto cascada se realiza para todas las operaciones sobre la entidad padre (facultad).
+
+Ver `@ManyToOne`. Muchas carreras pertenecen a una facultad. `@JoinColumn` indica la columna que actua como clave foranea en la tabla carrera. referencedColumnName permite renombrar la columna, para trabajar directamente con `idfacultad` y no con `facultad_idfacultad`, por ejemplo.
+
+### Mapeo de Herencia
+
+En JPA hay tres estrategias o maneras de hacerlo:
+
+```mermaid
+graph TD
+   Libro --> Item
+   CD --> Item
+```
+
+1. Una tabla que reune toda la informacion de las clases especializadas. ISBN es nulo en CDs y dicografica en Libros.
+
+2. Usar directiva @Inheritance(), esto crearia una tabla por cada clase, una Item una Libro y una CD, con relaciones entre ellas y Libro y CD no se lleva los atributos de Item.
+
+3. A diferencia de la anterior, no hay relacion, sino que Libro y CD se llevan todos los atributos de Item.
+
+## Generar Facades
+
+Añádir Session Beans for Entity Classes. Se añaden todas, en un package session, por ejemplo.
+
+> [!INFO]
+> Las entidades deberian generarse en el package entidad.
+
+## Ver cambios en el manejador y JSP
+
+Diapo 54 y 55
+
+## JPQL
+
+El PDF son simple ejemplos, revisar.
+
+> DE LAS ENTIDADES HAY QUE BORRAR LAS NAMEDQUERIES y esto es lo que va a las Facades.
