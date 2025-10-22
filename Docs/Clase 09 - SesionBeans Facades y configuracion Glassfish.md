@@ -4,7 +4,7 @@ Un EJB es un componente del lado del servidor que encapsula la lógica de negoci
 
 No es mas que una clase de java, un simple POJO (Plain Old Java Object) que sigue ciertas convenciones y anotaciones para ser reconocido como un EJB por el contenedor.
 
-Tiene atributos no publicos, al menos un constructor publico sin parametros y metodos publicos acceden a los atributos. Si bien el constructor no es es requerido explicitamente, es una buena práctica incluirlo.
+Tiene atributos no publicos, al menos un constructor publico sin parametros y metodos publicos acceden a los atributos. Puede ser protected, es usado por el contenedor (Glassfish) para instanciar el Bean.
 
 Se tienen que desplegar en un contenedor EJB, como JBoss, Glassfish o WebLogic.
 
@@ -21,7 +21,7 @@ JPA (Java Persistence API) define complementariamente entidades que representan 
 
 Los javabeans usados hasta el momento eran simples clases java, usados por los servlets, y eran como muy públicos.
 
-- **JavaBean:** Es simplemente una clase Java con atributos privados y métodos públicos getter/setter. No contiene lógica de negocio, solo sirve para representar datos (por ejemplo, un objeto Persona con nombre y edad). Se puede usar en cualquier aplicación Java, sin necesidad de un servidor especial.
+- **JavaBean:** Es simplemente una clase Java con atributos privados y métodos públicos getter/setter. No contiene lógica de negocio, solo sirve para representar datos (por ejemplo, un objeto Persona con nombre y edad). Se puede usar en cualquier aplicación Java, sin necesidad de un servidor especial, ni que los gestione un contenedor (como Glassfish).
 
 - **EJB (Enterprise Java Bean):** Es un bean más avanzado, gestionado por un contenedor EJB (como Glassfish). Además de encapsular lógica de negocio (las reglas y procesos de la aplicación), el contenedor le proporciona servicios empresariales como:
   - **Seguridad:** Controla quién puede acceder a sus métodos.
@@ -48,13 +48,13 @@ Pero hay que definir su tiempo de vida:
 - Stateful: Mantienen estado entre llamadas. Son útiles cuando se necesita conservar información específica del cliente durante una sesión. Este se utiliza por ejemplo para mantener el carrito de compras de un usuario, durante la sesion.
 - Singleton: Una sola instancia compartida entre todos los clientes. Se utiliza para mantener datos globales o configuraciones de la aplicación. No guardan datos sensibles, que suele existir durante la existencia de la aplicacion.
 
-## Sesion Bean JPA
+## Sesion Beans
 
-Hay que combinar las entidades JPA con los EJB para manejar la persistencia de datos en una aplicación Java EE.
+Los Session Beans son una combinación entre las entidades JPA y los EJB para manejar la persistencia de datos en una aplicación Java EE.
 
-El bean de sesion proporciona una interfaz para manipular las entidades, permitiendo tener un CRUD.
+En los EJB se encapsula la lógica de negocio y se gestionan las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre las entidades JPA.
 
-Aqui aparece el patron facade.
+Los Session Beans se implementan con el patron Facade y ofrecen una interfaz simplificada para interactuar con las entidades, permitiendo por ejemplo tener un CRUD.
 
 ## Facade
 
