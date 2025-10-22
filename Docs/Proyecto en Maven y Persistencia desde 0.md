@@ -264,6 +264,11 @@ public class MateriaServlet extends HttpServlet {
 </html>
 ```
 
+## JPQL
+
+En el servlet antes creado se está utilizando JPQL (Java Persistence Query Language) para obtener todas las materias de la base de datos.
+
+JPQL es un lenguaje de consulta similar a SQL, pero está diseñado para trabajar con entidades en lugar de tablas. Permite realizar consultas sobre los objetos de la aplicación en lugar de sobre las tablas de la base de datos directamente.
 
 
 
