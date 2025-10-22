@@ -4,7 +4,7 @@ Un EJB es un componente del lado del servidor que encapsula la lógica de negoci
 
 No es mas que una clase de java, un simple POJO (Plain Old Java Object) que sigue ciertas convenciones y anotaciones para ser reconocido como un EJB por el contenedor.
 
-Tiene atributos no publicos, al menos un constructor publico sin parametros y metodos publicos acceden a los atributos.
+Tiene atributos no publicos, al menos un constructor publico sin parametros y metodos publicos acceden a los atributos. Si bien el constructor no es es requerido explicitamente, es una buena práctica incluirlo.
 
 Se tienen que desplegar en un contenedor EJB, como JBoss, Glassfish o WebLogic.
 
@@ -19,10 +19,14 @@ JPA (Java Persistence API) define complementariamente entidades que representan 
 
 ## Diferencia entre JavaBeans y Session Beans
 
-- **JavaBeans**: Son componentes reutilizables que encapsulan datos y lógica de negocio, pero no están diseñados para ser gestionados por un contenedor EJB. No proporcionan servicios como transacciones o seguridad.
-- **Session Beans**: Son EJBs gestionados por un contenedor EJB y proporcionan servicios adicionales como transacciones, seguridad y concurrencia. Están diseñados para manejar la lógica de negocio en aplicaciones empresariales.
+Los javabeans usados hasta el momento eran simples clases java, usados por los servlets, y eran como muy públicos.
 
-Los beans antes los manejaban los servlets, y eran como muy públicos.
+- **JavaBean:** Es simplemente una clase Java con atributos privados y métodos públicos getter/setter. No contiene lógica de negocio, solo sirve para representar datos (por ejemplo, un objeto Persona con nombre y edad). Se puede usar en cualquier aplicación Java, sin necesidad de un servidor especial.
+
+- **EJB (Enterprise Java Bean):** Es un bean más avanzado, gestionado por un contenedor EJB (como Glassfish). Además de encapsular lógica de negocio (las reglas y procesos de la aplicación), el contenedor le proporciona servicios empresariales como:
+  - **Seguridad:** Controla quién puede acceder a sus métodos.
+  - **Transacciones:** Permite agrupar operaciones para que se ejecuten de forma segura.
+  - **Concurrencia:** Gestiona el acceso simultáneo de varios usuarios.
 
 ## Ventajas de usar EJB
 
@@ -130,6 +134,85 @@ Añádir Session Beans for Entity Classes. Se añaden todas, en un package sessi
 > [!INFO]
 > Las entidades deberian generarse en el package entidad.
 
+En las entidades hay que borrar las NamedQueries, ya que de esto se van a ocupar las Facades.
+
+No es obligatorio borrar las NamedQueries de las entidades, pero es común mover la lógica de consulta a los Facades para mantener las entidades más limpias.
+
+## Ejemplo de EJB con control de acceso
+
+Control de acceso por medio de directivas, es estatico y se configura a nivel de Glassfish.
+
+```java
+package com.ejb;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import java.util.List;
+import com.entidad.User;
+
+@Stateless
+public class UserSessionBean {
+
+    // Listar usuarios: permitido para admin y user
+    @RolesAllowed({"admin", "user"})
+    public List<User> listarUsuarios() {
+        // ... lógica para listar usuarios ...
+        return null; // ejemplo
+    }
+
+    // Crear usuario: permitido solo para user
+    @RolesAllowed("user")
+    public void crearUsuario(User nuevoUsuario) {
+        // ... lógica para crear usuario ...
+    }
+
+    // Borrar usuario: permitido solo para admin
+    @RolesAllowed("admin")
+    public void borrarUsuario(Long idUsuario) {
+        // ... lógica para borrar usuario ...
+    }
+}
+```
+
+Control de acceso dinamico, se consigue a nivel de los EJB, programando la logica:
+
+```java
+package com.ejb;
+
+import jakarta.ejb.Stateless;
+import java.util.List;
+import com.entidad.User;
+
+@Stateless
+public class UserSessionBean {
+
+    public List<User> listarUsuarios(User usuarioActual) {
+        // Todos los roles pueden listar
+        if (!usuarioActual.getRol().matches("admin|moderador|usuario")) {
+            throw new SecurityException("Acceso denegado.");
+        }
+        // ... lógica para listar usuarios ...
+        return null;
+    }
+
+    public void crearUsuario(User nuevoUsuario, User usuarioActual) {
+        // Solo usuarios registrados pueden crear (por ejemplo)
+        if (!usuarioActual.getRol().equals("usuario")) {
+            throw new SecurityException("Solo usuarios pueden crear usuarios.");
+        }
+        // ... lógica para crear usuario ...
+    }
+
+    public void borrarUsuario(Long idUsuario, User usuarioActual) {
+        // Solo admin puede borrar
+        if (!usuarioActual.getRol().equals("admin")) {
+            throw new SecurityException("Solo admin puede borrar usuarios.");
+        }
+        // ... lógica para borrar usuario ...
+    }
+}
+```
+
 ## Ver cambios en el manejador y JSP
 
 Diapo 54 y 55
@@ -138,4 +221,3 @@ Diapo 54 y 55
 
 El PDF son simple ejemplos, revisar.
 
-> DE LAS ENTIDADES HAY QUE BORRAR LAS NAMEDQUERIES y esto es lo que va a las Facades.
