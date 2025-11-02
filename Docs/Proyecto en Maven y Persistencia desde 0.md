@@ -1,6 +1,67 @@
 # Proyecto en Maven y Persistencia desde 0
 
-## Crear la BBDD
+## Requerimientos previos
+
+- Netbeans 25
+- JDK 11 (las versiones de JDK pueden convivir sin problemas): 
+    - Descargar: <https://www.oracle.com/latam/java/technologies/downloads/#java11>
+    - Instalar: `sudo dpkg -i ~/Descargas/jdk-11.0.28_linux-x64_bin.deb`
+    - Configurar la Platform en Netbeans: `Tools > Java Platforms > Add Platform > Seleccionar JDK 11`
+- Servidor: GlassFish Server 7.0.15 (o 25) (requiere JDK 11, quizas ya esta instalado el JDK 24, pero no sirve), ya incluye Derby
+    - Descargar: <https://glassfish.org/download_gf7.html> el que dice `Platform`
+    - Mover el archivo zip a la carpeta del usuario: `mv ~/Descargas/glassfish-7.0.15.zip ~/glassfish.zip`
+    - Descomprimir (en una carpeta de acceso común, en linux seria la carpeta del usuario):  `unzip ~/glassfish.zip -d ~/` (descomprime en glassfish7)
+- BBDD: MariaDB
+- Luego configurar mariadb (root password y privilegios):
+```sh
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin1234';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+> [!INFO]
+> En Windows, NetBeans da error si no existe un password para el root. Por lo tanto hay que configurar XAMPP y phpMyAdmin para usar el usurio root con password.
+
+1. Ingresar a phpMyAdmin > Cuentas de Usuario: Ponerle contraseña a todos los usuarios root. En el momento en que root(localhost) tenga password, phpMyAdmin fallara.
+2. Ubicar el archivo: `C:\xampp\phpMyAdmin\config.inc.php`
+3. Editar la línea: `$cfg['Servers'][$i]['password'] = '';` y poner el password que se le asigno a root, por ejemplo: `$cfg['Servers'][$i]['password'] = 'admin1234';`
+
+> [!WARNING]
+> No se puede hacer por el `my.ini`, si o si hay que editar el `.php`.
+
+## Crear la BBDD en MariaDB
+
+En **Windows** simplemente usar el administrador de XAMPP para crear la BBDD.
+
+En **Linux** hay que hacerlo por terminal:
+1. Entrar a MariaDB: `sudo mariadb -u root -p` (pone el pass de sudo y luego el pass de root de MariaDB)
+2. Crear la BBDD: `CREATE DATABASE IF NOT EXISTS universidad;`
+3. Salir: `EXIT;`
+
+## Conectar Netbeans a MariaDB
+
+### 1. Crear el Datasource para Netbeans
+
+Esta configuración es necesaria para que luego Glassfish defina el JDNI de la base de datos.
+
+1. Descargar el Jar del conector: <https://mariadb.com/downloads/connectors/>: Hay que seleccionar Producto (Java).
+![alt text](image-4.png)
+2. Ir a Services > click derecho en DataBases > New Connection > Seleccionar MariaDB en Driver y Add para añadir el Jar.
+![alt text](image-11.png)
+3. Configurar la contraseña para el root de MariaDB (y cualquier otra configuración necesaria) y **principalmente** la BBDD a usar.
+![alt text](image-5.png)
+4. No seleccionar ningun schema.
+5. El nombre debería quedar como: `jdbc:mariadb://localhost:3306/alumnosapp [root on Default schema]`
+6. Ir a Databases > jdbc > click derecho > Execute comand... > `show tables;` y ver que no muestre errores. En este punto la DDBB está vacía.
+
+> [!INFO]
+> Desde consola se puede ejecutar: `sudo mariadb -u root -p` (pide el pass sudo y el pass de la DDBB), luego `USE universidad;` y finalmente `SHOW TABLES;` para ver las tablas.
+> Para salir se puede poner `EXIT;`
+
+### 2. Crear las tablas
+
+1. Ir a Databases > jdbc > click derecho > Execute comand...
+2. Copiar y pegar el script SQL:
 
 ```sql
 -- Crear la base de datos
@@ -71,9 +132,8 @@ CREATE TABLE examen (
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
-```
 
-```sql
+-- Insertar datos de prueba
 delete from materia;
 insert into materia (idmateria,nombre) values (1,"Matematica");
 insert into materia (idmateria,nombre) values (2,"Programacion");
@@ -82,9 +142,49 @@ insert into materia (idmateria,nombre) values (4,"Backend");
 select * from materia;
 ```
 
-```sql
-delete from carrera;
-insert into carrera (idcarrera, nombre)
+## Añadir GlassFish a NetBeans
+
+1. Ir a Services > Servers > Botón derecho > Add Server
+2. ![alt text](image-8.png)
+3. ![alt text](image-9.png)
+4. ![alt text](image-10.png)
+
+## Configurar Glassfish para MariaDB
+
+1. Descargar `mariadb-java-client-3.5.6.jar`: https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client/3.5.6. Antes del XML para Maven dice Files y ahí está en el link para descargar el Jar.
+2. Copiar el Jar a la carpeta de extensiones de GlassFish: `/home/martin/glassfish/glassfish/domains/domain1/lib/`
+3. Reiniciar o Iniciar GlassFish: Desde Netbeans > Services > Servers > Botón derecho sobre Glassfish > Restart.
+4. Abrir la consola de Glassfish desde Netbeans > Services > Servers > Botón derecho sobre Glassfish > View Admin Console.
+
+## Crear el Pool (JDBC Connection Pool)
+
+1. Ir a Resources > JDBC > JDBC Connection Pools, y crear uno nuevo.
+2. Completar los siguientes campos:
+  - Pool Name: `UniversidadPool`
+  - Resource Type: `javax.sql.DataSource`
+  - Database Vendor: `MySQL`
+  - Darle a Next.
+  - Durante la creación del Pool no se puede cambiar el Datasource Classname, dejar `com.mysql.jdbc.jdbc2.optional.MysqlDataSource`
+  - Editar el Pool y modificar el Datasource Classname: `org.mariadb.jdbc.MariaDbDataSource`
+3. Añadir las siguientes propiedades:
+  - url: `jdbc:mariadb://localhost:3306/universidad`
+  - user: `root`
+  - password: `admin1234` (el pass de MariaDB)
+
+En este punto se puede probar la conexión entre Glassfish y MariaDB, desde el Pool > Ping.
+
+## Crear el JDNI (JDBC Resource)
+
+Luego de crear el Pool, hay que crear el JDNI:
+
+1. Ir a Resources > JDBC > JDBC Resources > New:
+2. Darle el nombre al JDNI, por ejemplo `jdbc/universidad`.
+3. Seleccionar el Pool creado antes.
+
+> [!INFO]
+> El JDNI se utiliza cuando se configura la unidad de persistencia en `persistence.xml`.
+
+---
 
 ## Creando el proyecto web
 
@@ -119,76 +219,14 @@ insert into carrera (idcarrera, nombre)
 3. Abrir el `Project File/pom.xml` y añadir en `<dependencies />`.
 4. Correr el proyecto (con esto, la primera vez, se va a descargar la dependencia).
 
-## Configurar Glassfish para MariaDB
-
-1. Descargar `mariadb-java-client-3.5.6.jar`
-2. Copiar el Jar a la carpeta de extensiones de GlassFish: `/home/martin/glassfish/glassfish/domains/domain1/lib/`
-3. Reiniciar GlassFish: Desde Netbeans > Services > Servers > Botón derecho sobre Glassfish > Restart.
-4. Abrir la consola de Glassfish desde Netbeans > Services > Servers > Botón derecho sobre Glassfish > View Admin Console.
-
-### Crear el Pool (JDBC Connection Pool)
-
-1. Ir a Resources > JDBC > JDBC Connection Pools, y crear uno nuevo.
-2. Completar los siguientes campos:
-  - Pool Name: `UniversidadPool`
-  - Resource Type: `javax.sql.DataSource`
-  - Database Vendor: `MySQL`
-  - Darle a Next.
-  - Datasource Classname: `org.mariadb.jdbc.MariaDbDataSource`
-3. Añadir las siguientes propiedades:
-  - url: `jdbc:mariadb://localhost:3306/universidad`
-  - user: `root`
-  - password: `admin1234` (el pass de MariaDB)
-
-## Crear el JDNI (JDBC Resource)
-
-Luego de crear el Pool, hay que crear el JDNI:
-
-1. Ir a Resources > JDBC > JDBC Resources > New:
-- Darle el nombre al JDNI, por ejemplo `jdbc/universidad`.
-- Seleccionar el Pool creado antes.
-
-## Testear la conexion a la BBDD
-
-### 1. Crear el Datasource para Netbeans
-
-Esta configuración es necesaria para que Glassfish defina el JDNI de la base de datos.
-
-1. Descargar el Jar del conector: <https://mariadb.com/downloads/connectors/>: Hay que seleccionar Producto (Java).
-![alt text](image-4.png)
-2. Ir a Services > click derecho en DataBases > New Connection > Seleccionar MariaDB en Driver y Add para añadir el Jar.
-3. Configurar la contraseña para el root de MariaDB (y cualquier otra configuración necesaria) y principalmente la BBDD a usar.
-
-![alt text](image-5.png)
-
-Luego se puede probar que esta conectando a la BBDD correcta ejecutando `show tables;` y debería mostrar las tablas de la BBDD.
-
-> [!INFO]
-> Desde consola se puede ejecutar: `sudo mariadb -u root -p` (pide el pass sudo y el pass de la DDBB), luego `USE universidad;` y finalmente `SHOW TABLES;` para ver las tablas.
-> Para salir se puede poner `EXIT;`
-
-### 2. Crear la entidad Java para tabla Facultad
-
-- Boton derecho sobre el proyecto > New > Entity Classes from Database
-
-![alt text](image-6.png)
-
-- Hay que seleccionar Local Data Source y luego `jdbc:mariadb://localhost:3306/universidad`.
-- Cuando carga las tablas, darle a `Add all` > Next > Next > tildar `Fully ...` y `Attributes ...` y darle a Finish.
-
-Esto va a generar las siguientes entidades:
-
-Facultad, Carrera, Alumnos, Examen, Materia
-
-![alt text](image-7.png)
-
-Ademas de las entidades para las tablas, se ha creado una entidad mas, llamada **ExamenPK**, esto se debe a que la tabla **Examen** contiene **dos PK**, uno hacia **Alumno** y otro hacia **Materia**.
-
 ## Configurar persistence.xml
 
 Ahora hay que configurar la unidad de persistencia, para que utilice el JDNI creado en Glassfish.
 
-En `src/main/resources/META-INF/persistence.xml`:
+> [!INFO]
+> En lugar de hacerlo a mano, siguiendo el siguiente orden, el `persistence.xml` se genera automáticamente. Primero borrar el `persistence.xml` (si se hizo lo del glassfish-resources.xml, también borrarlo). Luego el Pool en el servidor, luego el DataSource, y finalmente al crear las entidades, se vuelve a generar el `persistence.xml`.
+
+En Files > `src/main/resources/META-INF/persistence.xml`:
 
 ```xml
 <persistence version="3.0"
@@ -203,31 +241,48 @@ En `src/main/resources/META-INF/persistence.xml`:
 </persistence>
 ```
 
-> [!INFO]
-> En lugar de hacerlo a mano, siguiendo el siguiente orden, el `persistence.xml` se genera automaticamente. Primero borrar el `persistence.xml` (si se hizo lo del glassfish-resources.xml, tambien borrarlo). Luego el Pool en el servidor, luego el DataSource, y finalmente al crear las entidades, se vuelve a generar el `persistence.xml`.
+## Crear la entidad Java para tabla Facultad
+
+- Boton derecho sobre el proyecto > New > Entity Classes from Database
+
+![alt text](image-6.png)
+
+- Hay que seleccionar Local Data Source y luego `jdbc:mariadb://localhost:3306/universidad`.
+- Cuando carga las tablas, darle a `Add all` > Next > Next > tildar `Fully ...` y `Attributes ...` y darle a Finish.
+
+Esto va a generar las siguientes entidades:
+
+Facultad, Carrera, Alumnos, Examen, Materia
+
+![alt text](image-7.png)
+
+Además de las entidades para las tablas, se ha creado una entidad más, llamada **ExamenPK**, esto se debe a que la tabla **Examen** contiene **dos PK**, uno hacia **Alumno** y otro hacia **Materia**.
 
 ## Probar listar las Materias
 
-Hay que crear el jsp que las muestra, pero tambien el controlador (servlet) que obtiene los datos de la entidad (modelo).
+Hay que crear el jsp que las muestra, pero también el controlador (servlet) que obtiene los datos de la entidad (modelo).
 
 > [!WARNING]
 > Hay que editar el package de las entidades, de acuerdo al package generado.
 
-En Source Package > New Servlet:
+En Source Package > New > Servlet:
 
 ```java
-// servlet
+// servlet controller/MateriaServlet
 package controller;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import jakarta.persistence.*;
-import com.mypackage.Materia; // Ajusta el paquete según tu proyecto
 import java.io.IOException;
-import java.util.List;
+import jakarta.persistence.*; // Esto es requerido para el PersistenceContext
+import java.util.List; // Esto es requerido para usar List
+import com.mypackage.Materia; // Este es el import de la entidad Materia, cambiar segun el paquete generado
 
-@WebServlet("/materias")
+
+// MUY IMPORTANTE, el WebServlet es la URL que va a ejecutar este Servlet. El name es para configurar el web.xml
+// WebServlet(name = "MateriaServlet", urlPatterns = {"/index","/materias"})
+@WebServlet("/index")
 public class MateriaServlet extends HttpServlet {
     // Hay que editar src/main/resource/META-INF/persistence.xml para darle el nombre a la Unidad de Persistencia
     @PersistenceContext(unitName = "UniversidadPU")
@@ -238,14 +293,28 @@ public class MateriaServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Materia> materias = em.createQuery("SELECT m FROM Materia m", Materia.class).getResultList();
         request.setAttribute("materias", materias);
-        request.getRequestDispatcher("materias.jsp").forward(request, response);
+        // OJO, aqui hay que cambiar el nombre del JSP si es necesario
+        request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 }
 ```
 
+En este momento hay que configurar el web.xml, para que el servlet funcione correctamente al ingresar a la ruta base:
+
+```xml
+<servlet>
+    <servlet-name>MateriaServlet</servlet-name>
+    <servlet-class>controller.MateriaServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>MateriaServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+</servlet-mapping>
+```
+
 ```java
-//jsp
-<!-- filepath: src/main/webapp/materias.jsp -->
+// src/main/webapp/materias.jsp
+// Lo siguiente es el import para la entidad Materia, hay que corregir segun el paquete utilizado.
 <%@ page import="java.util.List, com.mypackage.Materia" %>
 <% List<Materia> materias = (List<Materia>) request.getAttribute("materias"); %>
 <html>
@@ -266,6 +335,16 @@ public class MateriaServlet extends HttpServlet {
 </body>
 </html>
 ```
+
+## Ejecutar el proyecto
+
+Si muestra la tabla con las materias, todo esta funcionando perfectamente.
+
+---
+
+
+
+
 
 ## JPQL
 
