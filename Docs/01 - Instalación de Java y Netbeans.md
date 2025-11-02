@@ -1,14 +1,15 @@
 # Instalación
 
-
-
 ## Instalación en Windows
 
-- Instalar JDK 25 (LTS): Ingresar a <https://www.oracle.com/latam/java/technologies/downloads/>, seleccionar Windows y descargar el x64 Installer.
+- Instalar JDK 24: Ingresar a <https://www.oracle.com/latam/java/technologies/downloads/>, seleccionar Windows y descargar el x64 Installer.
 - Instalar NetBeans 25: Ingresar a <https://netbeans.apache.org/front/main/download/nb25/>, descargar el exe.
-- Instalar Tomcat 11: Ingresar a <https://tomcat.apache.org/download-11.cgi> y descargar el zip, si se descarga Windows Service Installer, este se instalara en una carpeta con permisos de administrador y luego NetBeans no podrá acceder.
+- Instalar Tomcat 10: Ingresar a <https://tomcat.apache.org/download-10.cgi> y descargar el zip, si se descarga Windows Service Installer, este se instalara en una carpeta con permisos de administrador y luego NetBeans no podrá acceder.
 
 > Esto último, también sucede en Linux, si se instala tomcat en /opt, es mejor instalarlo en /home/usuario o /tmp.
+
+> [!WARNING]
+> Tomcat 11 requiere Java 17 o superior. Y lo mismo pasa con ciertas librerías, como JSTL 3.0. En la documentación de la cátedra figura JSTL 1.2, pero esta es muy antigua y no funciona con Tomcat 11.
 
 ## Instalación en Linux
 
@@ -77,6 +78,26 @@ El usuario y contraseña se encuentra en `/tomcat/conf/users.xml`.
 ![alt text](<assets/configuracion de tomcat.png>)
 
 ## **Guía paso a paso: VSCode + Ant + Tomcat en Windows 11**
+
+Pasos detallados para Windows:
+1.Encuentra la ubicación del JDK:
+Abre el Explorador de Archivos y localiza la carpeta donde instalaste el JDK. 
+La ruta suele ser algo como C:\Archivos de programa\Java\jdk-XX (reemplaza XX por tu versión de JDK). 
+
+2.Crea la variable JAVA_HOME:
+Busca y abre "Configuración avanzada del sistema" en la barra de búsqueda de Windows. 
+Haz clic en el botón "Variables de entorno". 
+En la sección de "Variables del sistema", haz clic en "Nuevo". 
+Como "Nombre de la variable", ingresa JAVA_HOME. 
+Como "Valor de la variable", pega la ruta a la carpeta del JDK (la que encontraste en el paso 1, sin la subcarpeta bin). 
+Haz clic en "Aceptar" para guardar. 
+
+3.Añade la ruta del JDK a la variable Path:
+En la misma ventana de "Variables de entorno", busca la variable Path y selecciónala. 
+Haz clic en "Editar". 
+Haz clic en "Nuevo" y agrega la siguiente entrada: %JAVA_HOME%\bin;. 
+Asegúrate de que este nuevo valor esté al principio de la lista y no elimines ninguna de las entradas existentes. 
+Haz clic en "Aceptar" en todas las ventanas para guardar los cambios.
 
 ### **1. Instalar Java JDK 24**
 - Descarga el JDK desde [Oracle](https://www.oracle.com/java/technologies/downloads/) o [Adoptium](https://adoptium.net/).

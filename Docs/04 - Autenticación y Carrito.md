@@ -23,7 +23,7 @@ Esto no reemplaza las cabeceras meta del documento HTML, pues las cabeceras son 
 %>
 ```
 
-Este primer bloque de codigo JSP (scriptet) se ejecuta cuando el coódigo es procesado por el servidor.
+Este primer bloque de código JSP (scriptlet) se ejecuta cuando el código es procesado por el servidor.
 
 `session` es una instancia de `HttpSession`, que permite guardar datos asociados a un usuario mientras navega.
 
@@ -66,7 +66,7 @@ Esta cookie es la que permite identificar al cliente en las siguientes peticione
 
 ### HttpSession session
 
-El objeto session permite guardar y recuperar claves en la sesion de cada usuario, del lado del servidor:
+El objeto session permite guardar y recuperar claves en la sesión de cada usuario, del lado del servidor:
 
 ```java
 // Guardar un valor
@@ -108,9 +108,9 @@ session.getAttribute("clave");
 ### request.getParameter()
 
 > [!INFO]
-> En los JSP, los objetos request, response, session, out, application, config y pageContext estan disponibles automaticamente, es decir, no necesitan ser importados como en los Servlets.
+> En los JSP, los objetos request, response, session, out, application, config y pageContext están disponibles automáticamente, es decir, no necesitan ser importados como en los Servlets.
 
-Cuando se solicita un JSP, el objeto `request` contiene todos los parametros pasados por get (y se accede a ellos por medio de `request.getParameter("nombreDelParametro")`).
+Cuando se solicita un JSP, el objeto `request` contiene todos los parámetros pasados por get (y se accede a ellos por medio de `request.getParameter("nombreDelParametro")`).
 
 ## AuthServlet
 
@@ -330,17 +330,17 @@ protected void processRequest(HttpServletRequest request, HttpServletResponse re
     }
 ```
 
-Aunque en este ejemplo, el response parece actuar como un return, no es asi, el response por medio de sus metodos prepara la respuestasolo va preparando la respuesta.
+Aunque en este ejemplo, el response parece actuar como un return, no es así, el response por medio de sus métodos prepara la respuesta.
 
-Solo cuando terminan de ejecutarse los métodos doGet o doPost es que se envia la respuesta.
+Solo cuando terminan de ejecutarse los métodos doGet o doPost es que se envía la respuesta.
 
 - getWriter(): Añade texto al cuerpo de la respuesta.
-- sendError(): Reemplaza cualquier respuesta por una respuesta de error predefinida e impide seguir modificando la respuesta. Cualquier intento de modificar la respuesta tras un sendError() sera ignorado o lanzara una excepcion en el servidor.
-- sendRedirect(): Provoca una redireccion del cliente a otra URL.
+- sendError(): Reemplaza cualquier respuesta por una respuesta de error predefinida e impide seguir modificando la respuesta. Cualquier intento de modificar la respuesta tras un sendError() será ignorado o lanzará una excepción en el servidor.
+- sendRedirect(): Provoca una redirección del cliente a otra URL.
 - setStatus(): define el código de status en la respuesta.
 - setContentType(): Define el tipo de contenido de la respuesta.
 - setHeader(): Añade o modifica una cabecera HTTP de la respuesta.
-- getOutputStream(): Permite escribir datos binarios en la respuesta, para poder enviar imagenes o archivos.
+- getOutputStream(): Permite escribir datos binarios en la respuesta, para poder enviar imágenes o archivos.
 
 ## Paginas de Error
 

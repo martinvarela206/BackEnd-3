@@ -204,4 +204,4 @@ Application es el alcance mas grande, se comparte entre todos los usuarios.
 
 
 Deberes:
-- modificar el ejercicio de alcance, permitiendo mandar el nombre, que se guarde en una coleccion de usuarios y se muestre junto con la cantidad de visitas.
+- modificar el ejercicio de alcance, permitiendo mandar el nombre, que se guarde en una colección de usuarios y se muestre junto con la cantidad de visitas.
