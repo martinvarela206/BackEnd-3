@@ -233,8 +233,8 @@ En Files > `src/main/resources/META-INF/persistence.xml`:
              xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
-  <persistence-unit name="UniversidadPU" transaction-type="JTA">
-    <jta-data-source>jdbc/universidad</jta-data-source>
+  <persistence-unit name="AlumnosAppPU" transaction-type="JTA">
+    <jta-data-source>jdbc/alumnosapp</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties/>
   </persistence-unit>
@@ -285,7 +285,7 @@ import com.mypackage.Materia; // Este es el import de la entidad Materia, cambia
 @WebServlet("/index")
 public class MateriaServlet extends HttpServlet {
     // Hay que editar src/main/resource/META-INF/persistence.xml para darle el nombre a la Unidad de Persistencia
-    @PersistenceContext(unitName = "UniversidadPU")
+    @PersistenceContext(unitName = "AlumnosAppPU")
     private EntityManager em;
 
     @Override
@@ -342,96 +342,164 @@ Si muestra la tabla con las materias, todo esta funcionando perfectamente.
 
 ---
 
+## CRUDs necesarios
 
+Implementar las vistas y formularios necesarios para registrar y consultar
+datos de las entidades principales del sistema. Esto incluye dotar de
+funcionalidad a las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de
+Alumno, Materia y Carrera.
 
+## CRUD de Alumno
 
+### Arquitectura de la aplicación
 
-## JPQL
+La arquitectura que se utiliza es el patrón MVC pero añadiendo una capa extra llamada gestor DAO para la persistencia de los datos.
 
-En el servlet antes creado se está utilizando JPQL (Java Persistence Query Language) para obtener todas las materias de la base de datos.
+- Modelo: Son las clases que van a dar lugar a las Entidades que reflejan a las tablas de la BBDD (creadas automáticamente por Netbeans).
+- Vista: Páginas JSP para mostrar los datos y formularios.
+- Controlador: Servlets que manejan las peticiones del usuario y coordinan entre la vista y el modelo.
+- Gestor DAO: Clases Java que encapsulan la lógica de acceso a datos utilizando JPA. Estas clases se encargan de realizar las operaciones CRUD sobre las entidades.
 
-JPQL es un lenguaje de consulta similar a SQL, pero está diseñado para trabajar con entidades en lugar de tablas. Permite realizar consultas sobre los objetos de la aplicación en lugar de sobre las tablas de la base de datos directamente.
+El servlet importa tanto al gestor como al modelo.
+El gestor importa al modelo y a JPA (jakarta.persistence.*).
+El modelo no importa nada.
 
+Flujo de llamadas
+1. Servlet recibe la petición del usuario.
+2. Servlet llama a métodos del Gestor/DAO para obtener o modificar datos.
+3. Gestor/DAO realiza la operación en la base de datos y devuelve objetos del Modelo al Servlet.
+4. Servlet pasa esos objetos a la Vista (JSP) para mostrarlos.
 
+![alt text](assets/Arquitectura.svg)
 
+### Modelo Alumno
 
+El modelo es la clase JPA creada anteriormente por Netbeans al seleccionar la opción "Entity Classes from Database".
 
-
-
-
-
-
+### Gestor AlumnoDAO
 
 ```java
-package model;
+package database;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+import java.util.List;
+import com.mycompany.alumnosapp.Alumno;
 
-@Entity
-public class Facultad {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idfacultad;
-    private String nombre;
+public class AlumnoDAO {
+    private EntityManager em;
 
-    // Getters y setters
-    public Integer getIdfacultad() { return idfacultad; }
-    public void setIdfacultad(Integer id) { this.idfacultad = id; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public AlumnoDAO(EntityManager em) {
+        this.em = em;
+    }
+
+    public void crear(Alumno alumno) {
+        em.persist(alumno); // JTA gestiona la transacción
+    }
+
+    public Alumno buscarPorId(int id) {
+        return em.find(Alumno.class, id);
+    }
+
+    public List<Alumno> listarTodos() {
+        return em.createNamedQuery("Alumno.findAll", Alumno.class).getResultList();
+    }
+
+    public void actualizar(Alumno alumno) {
+        em.merge(alumno); // JTA gestiona la transacción
+    }
+
+    public void eliminar(int id) {
+        Alumno alumno = em.find(Alumno.class, id);
+        if (alumno != null) {
+            em.remove(alumno); // JTA gestiona la transacción
+        }
+    }
 }
 ```
 
-
-
-### 3. Crear el servlet para consultar las facultades
+### Controlador AlumnoServlet
 
 ```java
 package controller;
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import jakarta.persistence.*;
-import model.Facultad;
+import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.List;
+import database.AlumnoDAO; // Importar el gestor AlumnoDAO
+import com.mycompany.alumnosapp.Alumno; // Importar la entidad Alumno
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
-@WebServlet("/index")
-public class FacultadServlet extends HttpServlet {
-    @PersistenceContext(unitName = "UniversidadPU")
+@WebServlet("/alumno")
+public class AlumnoServlet extends HttpServlet {
+    @PersistenceContext(unitName = "AlumnosAppPU")
     private EntityManager em;
+    private AlumnoDAO dao;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        List<Facultad> facultades = em.createQuery("SELECT f FROM Facultad f", Facultad.class).getResultList();
-        request.setAttribute("facultades", facultades);
-        request.getRequestDispatcher("index.jsp").forward(request, response);
+    public void init() throws ServletException {
+        dao = new AlumnoDAO(em);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Listar todos los alumnos
+        List<Alumno> alumnos = dao.listarTodos();
+        request.setAttribute("alumnos", alumnos);
+        RequestDispatcher rd = request.getRequestDispatcher("alumno.jsp");
+        rd.forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Crear nuevo alumno (ejemplo)
+        String nombre = request.getParameter("nombre");
+        String registro = request.getParameter("registro");
+        // ...obtener fkIdcarrera...
+        Alumno alumno = new Alumno();
+        alumno.setNombre(nombre);
+        alumno.setRegistro(registro);
+        // alumno.setFkIdcarrera(...);
+        dao.crear(alumno);
+        response.sendRedirect("alumno"); // Redirige para ver la lista actualizada
     }
 }
 ```
 
-### 4. Editar el index.jsp
+### Vista 
 
-```java
-<%@ page import="java.util.List, model.Facultad" %>
-<% List<Facultad> facultades = (List<Facultad>) request.getAttribute("facultades"); %>
+```jsp
+<%@ page import="com.mycompany.alumnosapp.Alumno" %>
+<%@ page import="java.util.List" %>
 <html>
-<head><title>Facultades</title></head>
+<head>
+    <title>Alumnos</title>
+</head>
 <body>
-<h2>Facultades</h2>
-<table border="1">
-<tr><th>ID</th><th>Nombre</th></tr>
-<% if (facultades != null) {
-     for (Facultad f : facultades) { %>
-  <tr>
-    <td><%= f.getIdfacultad() %></td>
-    <td><%= f.getNombre() %></td>
-  </tr>
-<%   }
-   } %>
-</table>
+    <h1>Lista de Alumnos</h1>
+    <table border="1">
+        <tr><th>ID</th><th>Nombre</th><th>Registro</th></tr>
+        <%
+            List<Alumno> alumnos = (List<Alumno>) request.getAttribute("alumnos");
+            for (Alumno a : alumnos) {
+        %>
+        <tr>
+            <td><%= a.getIdalumno() %></td>
+            <td><%= a.getNombre() %></td>
+            <td><%= a.getRegistro() %></td>
+        </tr>
+        <% } %>
+    </table>
+
+    <h2>Agregar Alumno</h2>
+    <form method="post" action="alumno">
+        Nombre: <input type="text" name="nombre" required><br>
+        Registro: <input type="text" name="registro" required><br>
+        <!-- Aquí podrías agregar un select para fkIdcarrera -->
+        <input type="submit" value="Agregar">
+    </form>
 </body>
 </html>
 ```
