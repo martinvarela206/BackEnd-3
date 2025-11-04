@@ -1,0 +1,21 @@
+# Para proyectos Java with Ant
+build/
+dist/
+*.war
+nbproject/private/
+*.class
+
+# Para proyectos Java with Maven
+target/
+*.war
+*.class
+*.log
+*.iml
+.idea/
+*.db
+*.DS_Store
+
+# Archivos de NetBeans
+nbproject/private/
+build/
+dist/
