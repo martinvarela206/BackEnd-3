@@ -11,7 +11,7 @@ import database.CarreraFacade; // Importar el gestor CarreraDAO
 import com.mycompany.alumnosapp.Alumno; // Importar la entidad Alumno
 import com.mycompany.alumnosapp.Carrera; // Importar la entidad Carrera
 
-@WebServlet("/alumno")
+@WebServlet("/alumnos")
 public class AlumnoServlet extends HttpServlet {
     @EJB
     private AlumnoFacade alumnoFacade;
@@ -29,7 +29,7 @@ public class AlumnoServlet extends HttpServlet {
         List<Carrera> carreras = carreraFacade.findAll();
         request.setAttribute("carreras", carreras);
         
-        RequestDispatcher rd = request.getRequestDispatcher("alumno.jsp");
+        RequestDispatcher rd = request.getRequestDispatcher("alumnos.jsp");
         rd.forward(request, response);
     }
 
@@ -47,7 +47,7 @@ public class AlumnoServlet extends HttpServlet {
             } catch (NumberFormatException e) {
                 // Manejar error si el id no es válido
             }
-            response.sendRedirect("alumno");
+            response.sendRedirect("alumnos");
             return;
         } else if ("agregar".equals(accion) || accion == null) {
             // Si no se envía "accion", se asume agregar por compatibilidad con el formulario actual
@@ -69,7 +69,7 @@ public class AlumnoServlet extends HttpServlet {
             alumno.setFkIdcarrera(carrera);
 
             alumnoFacade.create(alumno);
-            response.sendRedirect("alumno");
+            response.sendRedirect("alumnos");
             return;
         }
         // Aquí puedes añadir más acciones en el futuro, por ejemplo:

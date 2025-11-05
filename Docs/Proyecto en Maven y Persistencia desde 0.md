@@ -160,14 +160,14 @@ select * from materia;
 
 1. Ir a Resources > JDBC > JDBC Connection Pools, y crear uno nuevo.
 2. Completar los siguientes campos:
-  - Pool Name: `UniversidadPool`
+  - Pool Name: `AlumnosAppPool`
   - Resource Type: `javax.sql.DataSource`
   - Database Vendor: `MySQL`
   - Darle a Next.
   - Durante la creación del Pool no se puede cambiar el Datasource Classname, dejar `com.mysql.jdbc.jdbc2.optional.MysqlDataSource`
   - Editar el Pool y modificar el Datasource Classname: `org.mariadb.jdbc.MariaDbDataSource`
 3. Añadir las siguientes propiedades:
-  - url: `jdbc:mariadb://localhost:3306/universidad`
+  - url: `jdbc:mariadb://localhost:3306/alumnosapp`
   - user: `root`
   - password: `admin1234` (el pass de MariaDB)
 
@@ -178,7 +178,7 @@ En este punto se puede probar la conexión entre Glassfish y MariaDB, desde el P
 Luego de crear el Pool, hay que crear el JDNI:
 
 1. Ir a Resources > JDBC > JDBC Resources > New:
-2. Darle el nombre al JDNI, por ejemplo `jdbc/universidad`.
+2. Darle el nombre al JDNI, por ejemplo `jdbc/alumnosapp`.
 3. Seleccionar el Pool creado antes.
 
 > [!INFO]
@@ -247,7 +247,7 @@ En Files > `src/main/resources/META-INF/persistence.xml`:
 
 ![alt text](image-6.png)
 
-- Hay que seleccionar Local Data Source y luego `jdbc:mariadb://localhost:3306/universidad`.
+- Hay que seleccionar Local Data Source y luego `jdbc:mariadb://localhost:3306/alumnosapp`.
 - Cuando carga las tablas, darle a `Add all` > Next > Next > tildar `Fully ...` y `Attributes ...` y darle a Finish.
 
 Esto va a generar las siguientes entidades:
@@ -1321,3 +1321,203 @@ public class ConsultasServlet extends HttpServlet {
 </body>
 </html>
 ```
+
+## Cargando el Proyecto en Linux
+
+1. Configurar MariaDB:
+
+```sh
+sudo mariadb -u root
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin1234';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+2. Crear la base de datos:
+
+```sh
+sudo mariadb -u root -p
+```
+
+3. El Script SQL completo y actualizado es:
+
+```sql
+-- Crear la base de datos
+DROP DATABASE IF EXISTS alumnosapp;
+CREATE DATABASE IF NOT EXISTS alumnosapp;
+USE alumnosapp;
+
+-- Tabla: facultad
+CREATE TABLE facultad (
+    idfacultad INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    PRIMARY KEY (idfacultad)
+) ENGINE=InnoDB;
+
+-- Tabla: carrera
+CREATE TABLE carrera (
+    idcarrera INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    fk_idfacultad INT NOT NULL,
+    PRIMARY KEY (idcarrera),
+    INDEX fk_carrera_facultad_idx (fk_idfacultad ASC),
+    CONSTRAINT fk_carrera_facultad
+        FOREIGN KEY (fk_idfacultad)
+        REFERENCES facultad (idfacultad)
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+
+-- Tabla: alumno
+CREATE TABLE alumno (
+    idalumno INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    registro VARCHAR(6) NOT NULL,
+    fk_idcarrera INT NOT NULL,
+    PRIMARY KEY (idalumno),
+    INDEX fk_alumno_carrera1_idx (fk_idcarrera ASC),
+    CONSTRAINT fk_alumno_carrera1
+        FOREIGN KEY (fk_idcarrera)
+        REFERENCES carrera (idcarrera)
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+
+-- Tabla: materia
+CREATE TABLE materia (
+    idmateria INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    PRIMARY KEY (idmateria)
+) ENGINE=InnoDB;
+
+-- Tabla: examen
+CREATE TABLE examen (
+    fk_idmateria INT NOT NULL,
+    fk_idalumno INT NOT NULL,
+    fecha TIMESTAMP(6) NOT NULL,
+    nota INT,
+    PRIMARY KEY (fk_idmateria, fk_idalumno),
+    INDEX fk_materia_has_alumno_alumno1_idx (fk_idalumno ASC),
+    INDEX fk_materia_has_alumno_materia1_idx (fk_idmateria ASC),
+    CONSTRAINT fk_materia_has_alumno_materia1
+        FOREIGN KEY (fk_idmateria)
+        REFERENCES materia (idmateria)
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION,
+    CONSTRAINT fk_materia_has_alumno_alumno1
+        FOREIGN KEY (fk_idalumno)
+        REFERENCES alumno (idalumno)
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+
+CREATE TABLE docente (
+    iddocente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    cargo VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE docente_materia (
+    fk_iddocente INT,
+    fk_idmateria INT,
+    PRIMARY KEY (fk_iddocente, fk_idmateria),
+    FOREIGN KEY (fk_iddocente) REFERENCES docente(iddocente),
+    FOREIGN KEY (fk_idmateria) REFERENCES materia(idmateria)
+);
+
+-- Eliminar datos respetando las claves foráneas
+DELETE FROM docente_materia;
+DELETE FROM examen;
+DELETE FROM alumno;
+DELETE FROM docente;
+DELETE FROM carrera;
+DELETE FROM facultad;
+DELETE FROM materia;
+
+-- Facultades
+INSERT INTO facultad (idfacultad, nombre) VALUES
+(1, 'FCEFyN'),
+(2, 'FAD');
+
+-- Carreras
+INSERT INTO carrera (idcarrera, nombre, fk_idfacultad) VALUES
+(1, 'LCC', 1),
+(2, 'LSI', 1),
+(3, 'TUPW', 1),
+(4, 'Arq', 2),
+(5, 'DG', 2);
+
+-- materias (2 por carrera)
+INSERT INTO materia (idmateria, nombre) VALUES
+(1, 'Matemática Discreta'),
+(2, 'Programación I'),
+(3, 'Álgebra'),
+(4, 'Sistemas Operativos'),
+(5, 'Web I'),
+(6, 'Bases de Datos'),
+(7, 'Historia de la Arquitectura'),
+(8, 'Diseño Asistido'),
+(9, 'Teoría del Color'),
+(10, 'Tipografía');
+
+-- Alumnos (al menos uno por carrera, y uno sin exámenes en 2025)
+INSERT INTO alumno (idalumno, nombre, registro, fk_idcarrera) VALUES
+(1, 'Juan Perez', 'J00001', 1), -- LCC
+(2, 'Maria Gomez', 'M00002', 2), -- LSI
+(3, 'Carlos Ruiz', 'C00003', 3), -- TUPW
+(4, 'Ana Torres', 'A12345', 4), -- Arq
+(5, 'Luis Fernández', 'L54321', 5), -- DG
+(6, 'Sofía Martínez', 'S11111', 1), -- LCC (sin exámenes en 2025)
+(7, 'Pedro Alvarez', 'P22222', 2), -- LSI
+(8, 'Lucía Romero', 'L33333', 3), -- TUPW
+(9, 'Martín Castro', 'M44444', 4), -- Arq
+(10, 'Valeria Ruiz', 'V55555', 5); -- DG
+
+-- Exámenes (al menos un alumno sin exámenes en 2025: Sofía Martínez)
+INSERT INTO examen (fk_idmateria, fk_idalumno, fecha, nota) VALUES
+(1, 1, '2025-07-10 10:00:00', 8), -- Matemática Discreta, Juan Perez
+(2, 1, '2025-07-12 09:00:00', 7), -- Programación I, Juan Perez
+(3, 2, '2025-07-15 11:00:00', 6), -- Álgebra, Maria Gomez
+(4, 2, '2025-07-20 09:00:00', 9), -- Sistemas Operativos, Maria Gomez
+(5, 3, '2025-07-22 10:00:00', 8), -- Web I, Carlos Ruiz
+(6, 3, '2025-07-25 11:00:00', 7), -- Bases de Datos, Carlos Ruiz
+(7, 4, '2025-07-28 09:00:00', 6), -- Historia de la Arquitectura, Ana Torres
+(8, 4, '2025-07-30 10:00:00', 8), -- Diseño Asistido, Ana Torres
+(9, 5, '2025-07-31 11:00:00', 7), -- Teoría del Color, Luis Fernández
+(10, 5, '2025-07-31 12:00:00', 9), -- Tipografía, Luis Fernández
+(1, 7, '2025-07-10 10:00:00', 6), -- Matemática Discreta, Pedro Alvarez
+(2, 8, '2025-07-12 09:00:00', 8), -- Programación I, Lucía Romero
+(3, 9, '2025-07-15 11:00:00', 7), -- Álgebra, Martín Castro
+(4, 10, '2025-07-20 09:00:00', 8); -- Sistemas Operativos, Valeria Ruiz
+
+-- docentes (al menos dos dictan más de dos materias)
+INSERT INTO docente (iddocente, nombre, cargo) VALUES
+(1, 'Sergio López', 'Profesor Titular'),
+(2, 'Marta Díaz', 'Profesor Asociado'),
+(3, 'Javier Gómez', 'Profesor Adjunto'),
+(4, 'Laura Fernández', 'Profesor Titular');
+
+-- docente_materia (asignar materias, al menos dos docentes en más de 2 materias)
+INSERT INTO docente_materia (fk_iddocente, fk_idmateria) VALUES
+(1, 1), -- Sergio López dicta Matemática Discreta
+(1, 2), -- Sergio López dicta Programación I
+(1, 3), -- Sergio López dicta Álgebra
+(1, 4), -- Sergio López dicta Sistemas Operativos
+(2, 5), -- Marta Díaz dicta Web I
+(2, 6), -- Marta Díaz dicta Bases de Datos
+(2, 1), -- Marta Díaz dicta Matemática Discreta
+(3, 7), -- Javier Gómez dicta Historia de la Arquitectura
+(3, 8), -- Javier Gómez dicta Diseño Asistido
+(4, 9), -- Laura Fernández dicta Teoría del Color
+(4, 10), -- Laura Fernández dicta Tipografía
+(4, 5), -- Laura Fernández dicta Web I
+(4, 6); -- Laura Fernández dicta Bases de Datos
+```
+
+3. Copiar el conector a mariadb en glassfish: `cp mariadb-java-client-3.5.6.jar ~/glassfish/glassfish/domains/domain1/lib/`
+
+4. Reiniciar Glassfish.
+
+5. Crear el Pool y JDBC: Todo el proyecto esta configurado para trabajar con la bbdd, pool y JDBC alumnosapp, asi que ojo con eso.
+
+6. Probar.
