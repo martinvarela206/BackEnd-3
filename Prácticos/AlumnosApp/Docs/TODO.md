@@ -1,0 +1,1 @@
+Entender porque los href de las paginas usan por ejemplo index.jsp, y aun asi se ejecuta el servlet, pero cuando en el index se utiliza alumnos.jsp, el servlet no se ejecuta. Y porque no puedo poner / en lugar de index.jsp.
