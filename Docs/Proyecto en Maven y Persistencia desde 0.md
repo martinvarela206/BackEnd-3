@@ -167,7 +167,7 @@ select * from materia;
   - Durante la creación del Pool no se puede cambiar el Datasource Classname, dejar `com.mysql.jdbc.jdbc2.optional.MysqlDataSource`
   - Editar el Pool y modificar el Datasource Classname: `org.mariadb.jdbc.MariaDbDataSource`
 3. Añadir las siguientes propiedades:
-  - url: `jdbc:mariadb://localhost:3306/alumnosapp`
+  - url: `jdbc:mariadb://localhost:3306/alumnosapp` (aca va el nombre de la BBDD creada)
   - user: `root`
   - password: `admin1234` (el pass de MariaDB)
 

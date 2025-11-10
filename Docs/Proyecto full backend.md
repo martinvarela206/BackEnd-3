@@ -218,14 +218,16 @@ public class HelloResource {
 ```
 
 5. Probar el endpoint desplegando la aplicación en GlassFish y accediendo a:
-   - `http://localhost:8080/inventario-backend/api/hello/text` para obtener "Hello, World!" en texto plano.
-   - `http://localhost:8080/inventario-backend/api/hello/json` para obtener `{"message": "Hello, World!"}` en formato JSON.
+   - `http://localhost:8080/InventarioLIA/api/hello/text` para obtener "Hello, World!" en texto plano.
+   - `http://localhost:8080/InventarioLIA/api/hello/json` para obtener `{"message": "Hello, World!"}` en formato JSON.
 
 ## Añadir las Entity Classes
 
-Boton derecho sobre el proyecto > New > Entity Classes from Database.
+Botón derecho sobre el proyecto > New > Entity Classes from Database.
 
 ## Endpoint para devolver todos los elementos
+
+Configurar el persistence.xml para poder usar la unidad de persistencia. Hay que indicar el Data source y darle un nombre a la PU: `InventarioLiaPU`.
 
 Crear una clase Java llamada `ElementosResource` en el paquete `com.inventariolia.endpoints`.
 Añadir el siguiente código a la clase:
@@ -233,23 +235,61 @@ Añadir el siguiente código a la clase:
 ```java
 package com.inventariolia.endpoints;
 
-import com.inventariolia.entities.Elementos;
+import com.inventariolia.Elementos;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
+
 @Path("/elementos")
 public class ElementosResource {
-    @PersistenceContext(unitName = "inventario_liaPU")
+    @PersistenceContext(unitName = "InventarioLiaPU")
     private EntityManager em;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Elementos> getAllElementos() {
-        return em.createQuery("SELECT e FROM Elementos e", Elementos.class).getResultList();
+        // Usar API Criteria para construir la consulta
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Elementos> cq = cb.createQuery(Elementos.class);
+        Root<Elementos> root = cq.from(Elementos.class);
+        cq.select(root);
+        return em.createQuery(cq).getResultList();
     }
 }
 ```
+
+En este momento se puede presentar un problema de serialización cíclica debido a las relaciones entre las entidades. Para evitar esto, hay que modificar las entidades para que no se serialicen las relaciones que causan el ciclo.
+
+En la entidad **Elementos** hay que añadir la anotación `@JsonbTransient`:
+
+```java
+import jakarta.json.bind.annotation.JsonbTransient;
+
+@OneToMany(mappedBy = "elementos")
+@JsonbTransient // Evita la serialización de la colección
+private Collection<Movimientos> movimientosCollection;
+```
+
+En la entidad **Movimientos** hay que añadir la anotación `@JsonbTransient` en las relaciones para evitar problemas de serialización cíclica.
+
+```java
+import jakarta.json.bind.annotation.JsonbTransient;
+
+@ManyToOne
+@JoinColumns({
+    @JoinColumn(name = "nro_lia", referencedColumnName = "nroLia"),
+    @JoinColumn(name = "nro_unsj", referencedColumnName = "nroUnsj")
+})
+@JsonbTransient // Evita la serialización de la relación inversa
+private Elementos elementos;
+```
+
+Y probar el endpoint accediendo a:
+- `http://localhost:8080/InventarioLIA/api/elementos` para obtener todos los elementos en formato JSON.
