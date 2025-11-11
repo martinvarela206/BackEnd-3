@@ -293,3 +293,92 @@ private Elementos elementos;
 
 Y probar el endpoint accediendo a:
 - `http://localhost:8080/InventarioLIA/api/elementos` para obtener todos los elementos en formato JSON.
+
+## Configurando CORS
+
+Hay dos formas de configurar CORS en GlassFish:
+1. Usando el filtro CorsFilter de Tomcat (puede que GlassFish no incluya este filtro, y por lo tanto no encuentra el paquete).
+2. Creando un filtro CORS personalizado.
+
+### Opción 1: Usando el filtro CorsFilter de Tomcat
+
+Añadir en el archivo `web.xml` del proyecto las siguientes líneas:
+
+```xml
+<filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+    <init-param>
+        <param-name>cors.allowed.origins</param-name>
+        <param-value>*</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+### Opción 2: Creando un filtro CORS personalizado
+
+Crear una clase Java llamada `CorsFilter` en el paquete `com.inventariolia.filters` con el siguiente código:
+
+```java
+package com.inventariolia.filters;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class CorsFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // Inicialización si es necesaria
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+        // Configurar los encabezados CORS
+        httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+        httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        httpResponse.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
+
+        // Manejar solicitudes OPTIONS (preflight)
+        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+            httpResponse.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    public void destroy() {
+        // Limpieza si es necesaria
+    }
+}
+```
+Luego, añadir en el archivo `web.xml` del proyecto las siguientes líneas para registrar el filtro:
+
+```xml
+<filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>com.inventariolia.filters.CorsFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+Con esto, el backend debería estar configurado para manejar solicitudes CORS correctamente.
