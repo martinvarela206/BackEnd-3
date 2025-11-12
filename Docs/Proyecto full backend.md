@@ -1,5 +1,26 @@
 # Proyecto Full Backend con Maven
 
+## MariaDB en Linux
+
+```sh
+mysql -u <usuario> -p
+```
+
+Luego simplemente hay que pegar el script SQL o ejecutar comando individuales.
+
+Dado que los elementos tienen una clave primaria compuesta que parcialmente puede ser null, entonces, puede ser necesario configurar lo siguiente:
+
+```sql
+SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';
+```
+
+Si esto no funciona (por una cuestion de sesiones aparentemente), hay que ir a la carpeta: `/etc/mysql/mariadb.conf.d` y ejecutar `sudo code --no-sandbox --user-data-dir="~/.vscode-root" 50-server.cnf`
+
+Buscar `[mysqld]` y agregar la siguiente linea debajo:
+`sql_mode=NO_ENGINE_SUBSTITUTION`
+
+Luego reiniciar MariaDB con: `sudo systemctl restart mariadb`
+
 ## 1. Crear la Base de Datos para el proyecto
 
 ```SQL
@@ -128,7 +149,7 @@ INSERT INTO movimientos (nro_lia, nro_unsj, user_id, estado, ubicacion, fecha, c
 1. Iniciar Netbeans.
 2. Iniciar GlassFish desde Services > Servers.
 3. Ingresar a botón derecho sobre GlassFish y seleccionar "View Admin Console".
-4. Crear nuevo Pool.
+4. Crear nuevo Pool. La bbdd (url) es `jdbc:mariadb://localhost:3306/inventario_lia` y el classname del Data Source es `org.mariadb.jdbc.MariaDbDataSource`.
 5. Crear el JDBC/JDNI.
 6. En Netbeans hacer click derecho sobre Services > Databases > JDBC > New Connection.
    - Seleccionar el driver de MariaDB/MySQL.
@@ -382,3 +403,43 @@ Luego, añadir en el archivo `web.xml` del proyecto las siguientes líneas para 
 </filter-mapping>
 ```
 Con esto, el backend debería estar configurado para manejar solicitudes CORS correctamente.
+
+## Añadiendo mas endpoints para Elementos
+
+```java
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+
+@Path("/elementos")
+public class ElementosResource {
+    @PersistenceContext(unitName = "InventarioLiaPU")
+    private EntityManager em;
+
+    @GET
+    @Path("/{nro1}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Elementos getElemento(@PathParam("nro1") String nro1, @QueryParam("nro2") String nro2) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Elementos> cq = cb.createQuery(Elementos.class);
+        Root<Elementos> root = cq.from(Elementos.class);
+
+        if (nro2 != null) {
+            // Si nro2 está presente, buscar por nroLia y nroUnsj
+            cq.where(cb.and(
+                cb.equal(root.get("elementosPK").get("nroLia"), nro1),
+                cb.equal(root.get("elementosPK").get("nroUnsj"), nro2)
+            ));
+        } else {
+            // Si nro2 no está presente, buscar por nroLia o nroUnsj
+            cq.where(cb.or(
+                cb.equal(root.get("elementosPK").get("nroLia"), nro1),
+                cb.equal(root.get("elementosPK").get("nroUnsj"), nro1)
+            ));
+        }
+
+        // Ejecutar la consulta y devolver el resultado único
+        List<Elementos> resultados = em.createQuery(cq).getResultList();
+        return resultados.isEmpty() ? null : resultados.get(0);
+    }
+}
+```
