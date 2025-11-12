@@ -16,7 +16,8 @@ La conexion con la bbdd se logra de la siguiente manera:
 
 **JPQL (Java Persistence Query Language)** es el lenguaje de consultas orientado a objetos utilizado en JPA para realizar consultas sobre las entidades. En lugar de usar SQL, se usan consultas basadas en las clases y atributos de las entidades. Por ejemplo , para obtener todos los alumnos mayores de 18 años, se podría usar la siguiente consulta JPQL:
 ```java
-String jpql = "SELECT a FROM Alumno a WHERE a.edadd > 18"; // El error de edadd no se sabe hasta la ejecución.
+String jpql = "SELECT a FROM Alumno a WHERE a.edadd > 18";
+// El error de edadd no se sabe hasta la ejecución.
 List<Alumno> resultados = em.createQuery(jpql, Alumno.class).getResultList();
 ```
 
@@ -26,7 +27,8 @@ List<Alumno> resultados = em.createQuery(jpql, Alumno.class).getResultList();
 CriteriaBuilder cb = em.getCriteriaBuilder();
 CriteriaQuery<Alumno> cq = cb.createQuery(Alumno.class);
 Root<Alumno> alumno = cq.from(Alumno.class);
-cq.select(alumno).where(cb.gt(alumno.get("edadd"), 18)); // El IDE es capaz de advertir que no existe edadd
+cq.select(alumno).where(cb.gt(alumno.get("edadd"), 18));
+// El IDE es capaz de advertir que no existe edadd
 List<Alumno> resultados = em.createQuery(cq).getResultList();
 ```
 
