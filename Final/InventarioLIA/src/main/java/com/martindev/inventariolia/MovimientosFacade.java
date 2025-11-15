@@ -4,10 +4,11 @@
  */
 package com.martindev.inventariolia;
 
+import java.util.List;
+
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.util.List;
 
 /**
  *
@@ -29,9 +30,13 @@ public class MovimientosFacade extends AbstractFacade<Movimientos> {
     }
     
     public List<Movimientos> findByNroLia(Elementos elemento) {
-        return em.createQuery("SELECT m FROM Movimientos m WHERE m.nroLia = :elemento", Movimientos.class)
-                 .setParameter("elemento", elemento)
-                 .getResultList();
+        jakarta.persistence.criteria.CriteriaBuilder cb = em.getCriteriaBuilder();
+        jakarta.persistence.criteria.CriteriaQuery<Movimientos> cq = cb.createQuery(Movimientos.class);
+        jakarta.persistence.criteria.Root<Movimientos> movRoot = cq.from(Movimientos.class);
+        cq.select(movRoot)
+            .where(cb.equal(movRoot.get("nroLia"), elemento))
+            .orderBy(cb.desc(movRoot.get("fecha")));
+        return em.createQuery(cq).getResultList();
     }
     
 }

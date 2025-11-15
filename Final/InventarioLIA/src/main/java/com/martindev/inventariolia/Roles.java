@@ -114,7 +114,8 @@ public class Roles implements Serializable {
 
     @Override
     public String toString() {
-        return "com.martindev.inventariolia.Roles[ id=" + id + " ]";
+        System.out.println("Este rol: " + this.rol);
+        return this.rol; // o getRol()
     }
     
 }

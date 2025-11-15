@@ -1,0 +1,32 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%
+    java.util.List roles = (java.util.List) session.getAttribute("roles");
+    StringBuilder sb = new StringBuilder();
+    if (roles != null) {
+        for (Object r : roles) sb.append(r.toString()).append(",");
+    }
+    pageContext.setAttribute("rolesString", sb.toString());
+%>
+<div style="background:#eee; padding:10px; margin-bottom:20px;">
+    <c:choose>
+        <c:when test="${not empty sessionScope.usuario}">
+            Bienvenido, <b>${sessionScope.usuario.nombre}</b>
+            |
+            <a href="/">Inicio</a>
+            <c:if test="${fn:contains(pageScope.rolesString, 'coordinador') || fn:contains(pageScope.rolesString, 'tecnico') || fn:contains(pageScope.rolesString, 'revisor')}">
+                |
+                <a href="elementos">Elementos</a>
+            </c:if>
+            <c:if test="${fn:contains(pageScope.rolesString, 'coordinador')}">
+                |
+                <a href="movimientos">Movimientos</a>
+            </c:if>
+            |
+            <a href="logout">Cerrar sesión</a>
+        </c:when>
+        <c:otherwise>
+            <a href="login.jsp">Iniciar sesión</a>
+        </c:otherwise>
+    </c:choose>
+</div>

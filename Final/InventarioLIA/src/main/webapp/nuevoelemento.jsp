@@ -1,7 +1,4 @@
-<navbar>
-    <a href="elementos">Inventario</a> | 
-    <a href="movimientos">Movimientos</a> | 
-</navbar>
+<%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
 <form action="elementos" method="post">
     <input type="hidden" name="accion" value="crear" />

@@ -879,9 +879,7 @@ En `detalleelemento.jsp`, añade un botón para crear un nuevo movimiento asocia
 <a href="movimientos?accion=nuevo&nroLia=${elemento.nroLia}">Añadir Nuevo Movimiento</a>
 ```
 
-## 13. Implementacion de la autenticacion y autorizacion por roles de usuario
-
-## 13. Implementación de autenticación y autorización por roles
+## 14. Implementación de autenticación y autorización por roles
 
 En esta sección se explica cómo implementar un sistema de login y control de acceso por roles, permitiendo que:
 
@@ -891,7 +889,7 @@ En esta sección se explica cómo implementar un sistema de login y control de a
 - El revisor solo puede ver los listados.
 - A futuro, el administrador podrá gestionar usuarios.
 
-### 13.1. Estructura general
+### 14.1. Estructura general
 
 1. **Login:** Formulario JSP y un servlet que valida usuario y contraseña.
 2. **Guardar usuario y roles en sesión:** Tras login exitoso, guardar el usuario y sus roles en `HttpSession`.
@@ -901,7 +899,7 @@ En esta sección se explica cómo implementar un sistema de login y control de a
 
 ---
 
-### 13.2. Formulario de login (`login.jsp`)
+### 14.2. Formulario de login (`login.jsp`)
 
 ```jsp
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -918,7 +916,7 @@ En esta sección se explica cómo implementar un sistema de login y control de a
 
 ---
 
-### 13.3. Servlet de login (`LoginServlet.java`)
+### 14.3. Servlet de login (`LoginServlet.java`)
 
 Ubicación sugerida: `com.martindev.inventariolia.controllers.LoginServlet`
 
@@ -957,7 +955,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("usuario", usuario);
             session.setAttribute("roles", roles);
-            response.sendRedirect("inicio.jsp");
+            response.sendRedirect("index.jsp");
         } else {
             request.setAttribute("error", "Usuario o contraseña incorrectos");
             request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -971,7 +969,55 @@ public class LoginServlet extends HttpServlet {
 
 ---
 
-### 13.4. Filtro de autorización (`AuthFilter.java`)
+### 14.4. Métodos sugeridos para `UsuariosFacade`
+
+```java
+import java.util.List;
+
+@Stateless
+public class UsuariosFacade extends AbstractFacade<Usuarios> {
+    // Otros métodos...
+
+    public Usuarios findByNombreYPassword(String nombre, String password) {
+        try {
+            jakarta.persistence.criteria.CriteriaBuilder cb = em.getCriteriaBuilder();
+            jakarta.persistence.criteria.CriteriaQuery<Usuarios> cq = cb.createQuery(Usuarios.class);
+            jakarta.persistence.criteria.Root<Usuarios> userRoot = cq.from(Usuarios.class);
+            cq.select(userRoot)
+                .where(
+                    cb.and(
+                        cb.equal(userRoot.get("nombre"), nombre),
+                        cb.equal(userRoot.get("password"), password)
+                    )
+                );
+            return em.createQuery(cq).getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<Roles> obtenerRoles(Usuarios usuario) {
+        System.out.println("Roles del usuario: " + usuario.getRolesCollection());
+        // Usar Criteria API para forzar la carga de roles relacionados al usuario
+        jakarta.persistence.criteria.CriteriaBuilder cb = em.getCriteriaBuilder();
+        jakarta.persistence.criteria.CriteriaQuery<Roles> cq = cb.createQuery(Roles.class);
+        jakarta.persistence.criteria.Root<Usuarios> userRoot = cq.from(Usuarios.class);
+        jakarta.persistence.criteria.Join<Usuarios, Roles> rolesJoin = userRoot.join("rolesCollection");
+        cq.select(rolesJoin).where(cb.equal(userRoot.get("id"), usuario.getId()));
+        cq.distinct(true);
+        return em.createQuery(cq).getResultList();
+    }
+}
+```
+
+Hay que editar la entidad `Usuarios` para asegurarse de que la relación con `Roles` añada lo siguiente:
+
+```java
+    @ManyToMany(mappedBy = "usuariosCollection", fetch = FetchType.EAGER)
+    private Collection<Roles> rolesCollection;
+```
+
+### 14.5. Filtro de autorización (`AuthFilter.java`)
 
 Ubicación sugerida: `com.martindev.inventariolia.filters.AuthFilter`
 
@@ -1035,7 +1081,7 @@ public class AuthFilter implements Filter {
 
         if (!autorizado) {
             session.setAttribute("alerta", "No tiene permisos necesarios");
-            response.sendRedirect("inicio.jsp");
+            response.sendRedirect("index.jsp");
             return;
         }
 
@@ -1053,7 +1099,7 @@ public class AuthFilter implements Filter {
 
 ---
 
-### 13.5. Mostrar alertas en la página de inicio (`inicio.jsp`)
+### 14.6. Mostrar alertas en la página de inicio (`index.jsp`)
 
 ```jsp
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -1065,7 +1111,7 @@ public class AuthFilter implements Filter {
 
 ---
 
-### 13.6. Logout (`LogoutServlet.java`)
+### 14.7. Logout (`LogoutServlet.java`)
 
 ```java
 package com.martindev.inventariolia.controllers;
@@ -1089,29 +1135,137 @@ public class LogoutServlet extends HttpServlet {
 
 ---
 
-### 13.7. Métodos sugeridos para `UsuariosFacade`
+### 14.8. Barra de navegación dinámica en todos los JSP
 
-```java
-// En UsuariosFacade.java
-public Usuarios findByNombreYPassword(String nombre, String password) {
-    try {
-        return em.createQuery("SELECT u FROM Usuarios u WHERE u.nombre = :nombre AND u.password = :password", Usuarios.class)
-            .setParameter("nombre", nombre)
-            .setParameter("password", password)
-            .getSingleResult();
-    } catch (Exception e) {
-        return null;
+Para mantener la navegación y control de acceso en todas las páginas, se recomienda crear un archivo JSP reutilizable (por ejemplo, `navbar.jspf`) e incluirlo en todos los JSP principales.
+
+### 14.8.1. Crear el fragmento de barra de navegación (`navbar.jspf`)
+Coloca este archivo en `src/main/webapp/WEB-INF/jspf/navbar.jspf`:
+
+```jsp
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<div style="background:#eee; padding:10px; margin-bottom:20px;">
+    <c:choose>
+        <c:when test="${not empty sessionScope.usuario}">
+            Bienvenido, <b>${sessionScope.usuario.nombre}</b>
+            |
+            <a href="index.jsp">Inicio</a>
+            <c:if test="${fn:contains(rolesString, 'coordinador') || fn:contains(rolesString, 'tecnico') || fn:contains(rolesString, 'revisor')}">
+                |
+                <a href="elementos">Elementos</a>
+            </c:if>
+            <c:if test="${fn:contains(rolesString, 'coordinador')}">
+                |
+                <a href="movimientos">Movimientos</a>
+            </c:if>
+            |
+            <a href="logout">Cerrar sesión</a>
+        </c:when>
+        <c:otherwise>
+            <a href="login.jsp">Iniciar sesión</a>
+        </c:otherwise>
+    </c:choose>
+</div>
+<%
+    // Utilidad para roles en string
+    java.util.List roles = (java.util.List) session.getAttribute("roles");
+    StringBuilder sb = new StringBuilder();
+    if (roles != null) {
+        for (Object r : roles) sb.append(r.toString()).append(",");
     }
-}
-
-public List<Roles> obtenerRoles(Usuarios usuario) {
-    return em.createQuery("SELECT r FROM Roles r JOIN r.usuariosList u WHERE u.id = :userId", Roles.class)
-        .setParameter("userId", usuario.getId())
-        .getResultList();
-}
+    pageContext.setAttribute("rolesString", sb.toString());
+%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 ```
 
 ---
 
-Con esto tienes un sistema de autenticación y autorización por roles, extensible para futuros permisos y CRUD de usuarios.
+### 14.8.2. Incluir la barra en todos los JSP
 
+Al inicio de cada JSP principal (por ejemplo, `elementos.jsp`, `movimientos.jsp`, `index.jsp`, etc):
+
+```jsp
+<%@ include file="WEB-INF/jspf/navbar.jspf" %>
+```
+
+---
+
+### 14.8.3. Controlar visibilidad de enlaces y acciones según rol
+
+#### Enlace a "Elementos":
+- Solo visible para usuarios autenticados con rol coordinador, técnico o revisor (no para invitados).
+
+#### Enlace a "Movimientos":
+- Solo visible para coordinadores.
+
+#### Botón "Añadir Elemento" en `elementos.jsp`:
+
+```jsp
+<c:if test="${fn:contains(rolesString, 'tecnico') || fn:contains(rolesString, 'coordinador')}">
+    <a href="nuevoelemento.jsp">Añadir Elemento</a>
+</c:if>
+```
+
+#### Acciones "Modificar" y "Eliminar" en `elementos.jsp`:
+
+```jsp
+<c:if test="${fn:contains(rolesString, 'coordinador')}">
+    <a href="editarelemento.jsp?nroLia=${e.nroLia}">Modificar</a> |
+    <a href="elementos?accion=eliminar&nroLia=${e.nroLia}" onclick="return confirm('¿Seguro que desea eliminar este elemento?');">Eliminar</a>
+</c:if>
+```
+
+#### Acceso a páginas:
+- El filtro `AuthFilter` ya controla que los invitados no puedan ver elementos ni movimientos.
+- Los revisores solo pueden ver elementos (no movimientos).
+- Los coordinadores pueden ver y operar en ambas.
+
+---
+
+### 14.8.4. Ejemplo de uso en `elementos.jsp`
+
+```jsp
+<%@ include file="navbar.jspf" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<h1>Lista de Elementos</h1>
+<c:if test="${fn:contains(rolesString, 'tecnico') || fn:contains(rolesString, 'coordinador')}">
+    <a href="nuevoelemento.jsp">Añadir Elemento</a>
+</c:if>
+<table border="1">
+    <tr>
+        <th>Nro LIA</th>
+        <th>Nro UNSJ</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+        <th>Cantidad</th>
+        <th>Acciones</th>
+    </tr>
+    <c:forEach var="e" items="${lista}">
+        <tr>
+            <td>${e.nroLia}</td>
+            <td>${e.nroUnsj}</td>
+            <td>${e.tipo}</td>
+            <td>${e.descripcion}</td>
+            <td>${e.cantidad}</td>
+            <td>
+                <c:if test="${fn:contains(rolesString, 'coordinador')}">
+                    <a href="editarelemento.jsp?nroLia=${e.nroLia}">Modificar</a> |
+                    <a href="elementos?accion=eliminar&nroLia=${e.nroLia}" onclick="return confirm('¿Seguro que desea eliminar este elemento?');">Eliminar</a>
+                </c:if>
+            </td>
+        </tr>
+    </c:forEach>
+</table>
+```
+
+### 14.9 Modificar Roles.toString()
+
+Por defecto el Roles.toString() devuelve mas de lo que se necesita, asi que hay que sobreescribir el metodo de la siguiente forma:
+
+```java
+@Override
+public String toString() {
+    return this.rol; // o getRol()
+}
+```

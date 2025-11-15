@@ -1,9 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<navbar>
-    <a href="elementos">Inventario</a> | 
-    <a href="movimientos">Movimientos</a> | 
-</navbar>
+<%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
 <h2>Detalle del Elemento</h2>
 <table border="1">
