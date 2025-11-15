@@ -1,4 +1,4 @@
-package com.inventariolia.resources;
+package com.martindev.inventariolia.resources;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

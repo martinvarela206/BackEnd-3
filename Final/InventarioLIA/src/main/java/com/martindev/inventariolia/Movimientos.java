@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.inventariolia;
+package com.martindev.inventariolia;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
@@ -21,7 +20,6 @@ import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.json.bind.annotation.JsonbTransient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -35,6 +33,7 @@ import java.util.Date;
 @NamedQueries({
     @NamedQuery(name = "Movimientos.findAll", query = "SELECT m FROM Movimientos m"),
     @NamedQuery(name = "Movimientos.findById", query = "SELECT m FROM Movimientos m WHERE m.id = :id"),
+    @NamedQuery(name = "Movimientos.findByNroUnsj", query = "SELECT m FROM Movimientos m WHERE m.nroUnsj = :nroUnsj"),
     @NamedQuery(name = "Movimientos.findByEstado", query = "SELECT m FROM Movimientos m WHERE m.estado = :estado"),
     @NamedQuery(name = "Movimientos.findByUbicacion", query = "SELECT m FROM Movimientos m WHERE m.ubicacion = :ubicacion"),
     @NamedQuery(name = "Movimientos.findByFecha", query = "SELECT m FROM Movimientos m WHERE m.fecha = :fecha"),
@@ -47,6 +46,9 @@ public class Movimientos implements Serializable {
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
     private Integer id;
+    @Size(max = 25)
+    @Column(name = "nro_unsj", length = 25)
+    private String nroUnsj;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 12)
@@ -63,12 +65,9 @@ public class Movimientos implements Serializable {
     @Size(max = 255)
     @Column(name = "comentario", length = 255)
     private String comentario;
-    @JoinColumns({
-        @JoinColumn(name = "nro_lia", referencedColumnName = "nro_lia"),
-        @JoinColumn(name = "nro_unsj", referencedColumnName = "nro_unsj")})
+    @JoinColumn(name = "nro_lia", referencedColumnName = "nro_lia")
     @ManyToOne
-    @JsonbTransient
-    private Elementos elementos;
+    private Elementos nroLia;
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Usuarios userId;
@@ -92,6 +91,14 @@ public class Movimientos implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getNroUnsj() {
+        return nroUnsj;
+    }
+
+    public void setNroUnsj(String nroUnsj) {
+        this.nroUnsj = nroUnsj;
     }
 
     public String getEstado() {
@@ -126,12 +133,12 @@ public class Movimientos implements Serializable {
         this.comentario = comentario;
     }
 
-    public Elementos getElementos() {
-        return elementos;
+    public Elementos getNroLia() {
+        return nroLia;
     }
 
-    public void setElementos(Elementos elementos) {
-        this.elementos = elementos;
+    public void setNroLia(Elementos nroLia) {
+        this.nroLia = nroLia;
     }
 
     public Usuarios getUserId() {
@@ -164,7 +171,7 @@ public class Movimientos implements Serializable {
 
     @Override
     public String toString() {
-        return "com.inventariolia.Movimientos[ id=" + id + " ]";
+        return "com.martindev.inventariolia.Movimientos[ id=" + id + " ]";
     }
     
 }

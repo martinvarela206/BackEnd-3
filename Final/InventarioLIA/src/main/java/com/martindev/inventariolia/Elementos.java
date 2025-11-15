@@ -2,12 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.inventariolia;
+package com.martindev.inventariolia;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
@@ -16,7 +16,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
-import jakarta.json.bind.annotation.JsonbTransient;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -29,16 +28,23 @@ import java.util.Collection;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Elementos.findAll", query = "SELECT e FROM Elementos e"),
-    @NamedQuery(name = "Elementos.findByNroLia", query = "SELECT e FROM Elementos e WHERE e.elementosPK.nroLia = :nroLia"),
-    @NamedQuery(name = "Elementos.findByNroUnsj", query = "SELECT e FROM Elementos e WHERE e.elementosPK.nroUnsj = :nroUnsj"),
+    @NamedQuery(name = "Elementos.findByNroLia", query = "SELECT e FROM Elementos e WHERE e.nroLia = :nroLia"),
+    @NamedQuery(name = "Elementos.findByNroUnsj", query = "SELECT e FROM Elementos e WHERE e.nroUnsj = :nroUnsj"),
     @NamedQuery(name = "Elementos.findByTipo", query = "SELECT e FROM Elementos e WHERE e.tipo = :tipo"),
     @NamedQuery(name = "Elementos.findByDescripcion", query = "SELECT e FROM Elementos e WHERE e.descripcion = :descripcion"),
     @NamedQuery(name = "Elementos.findByCantidad", query = "SELECT e FROM Elementos e WHERE e.cantidad = :cantidad")})
 public class Elementos implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected ElementosPK elementosPK;
+    @Id
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 25)
+    @Column(name = "nro_lia", nullable = false, length = 25)
+    private String nroLia;
+    @Size(max = 25)
+    @Column(name = "nro_unsj", length = 25)
+    private String nroUnsj;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 9)
@@ -49,32 +55,35 @@ public class Elementos implements Serializable {
     private String descripcion;
     @Column(name = "cantidad")
     private Integer cantidad;
-    @OneToMany(mappedBy = "elementos")
-    @JsonbTransient
+    @OneToMany(mappedBy = "nroLia")
     private Collection<Movimientos> movimientosCollection;
 
     public Elementos() {
     }
 
-    public Elementos(ElementosPK elementosPK) {
-        this.elementosPK = elementosPK;
+    public Elementos(String nroLia) {
+        this.nroLia = nroLia;
     }
 
-    public Elementos(ElementosPK elementosPK, String tipo) {
-        this.elementosPK = elementosPK;
+    public Elementos(String nroLia, String tipo) {
+        this.nroLia = nroLia;
         this.tipo = tipo;
     }
 
-    public Elementos(String nroLia, String nroUnsj) {
-        this.elementosPK = new ElementosPK(nroLia, nroUnsj);
+    public String getNroLia() {
+        return nroLia;
     }
 
-    public ElementosPK getElementosPK() {
-        return elementosPK;
+    public void setNroLia(String nroLia) {
+        this.nroLia = nroLia;
     }
 
-    public void setElementosPK(ElementosPK elementosPK) {
-        this.elementosPK = elementosPK;
+    public String getNroUnsj() {
+        return nroUnsj;
+    }
+
+    public void setNroUnsj(String nroUnsj) {
+        this.nroUnsj = nroUnsj;
     }
 
     public String getTipo() {
@@ -113,7 +122,7 @@ public class Elementos implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (elementosPK != null ? elementosPK.hashCode() : 0);
+        hash += (nroLia != null ? nroLia.hashCode() : 0);
         return hash;
     }
 
@@ -124,7 +133,7 @@ public class Elementos implements Serializable {
             return false;
         }
         Elementos other = (Elementos) object;
-        if ((this.elementosPK == null && other.elementosPK != null) || (this.elementosPK != null && !this.elementosPK.equals(other.elementosPK))) {
+        if ((this.nroLia == null && other.nroLia != null) || (this.nroLia != null && !this.nroLia.equals(other.nroLia))) {
             return false;
         }
         return true;
@@ -132,7 +141,7 @@ public class Elementos implements Serializable {
 
     @Override
     public String toString() {
-        return "com.inventariolia.Elementos[ elementosPK=" + elementosPK + " ]";
+        return "com.martindev.inventariolia.Elementos[ nroLia=" + nroLia + " ]";
     }
     
 }

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.inventariolia;
+package com.martindev.inventariolia;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -114,7 +114,7 @@ public class Roles implements Serializable {
 
     @Override
     public String toString() {
-        return "com.inventariolia.Roles[ id=" + id + " ]";
+        return "com.martindev.inventariolia.Roles[ id=" + id + " ]";
     }
     
 }
