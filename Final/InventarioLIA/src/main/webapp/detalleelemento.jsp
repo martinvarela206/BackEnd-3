@@ -145,15 +145,17 @@
             <td>${m.ubicacion}</td>
             <td>${m.comentario}</td>
             <td>
-                <a href="movimientos?accion=editar&id=${m.id}" class="boton-accion" title="Modificar movimiento">Modificar</a>
-                <c:choose>
-                    <c:when test="${status.last}">
-                        <button class="boton-accion boton-eliminar" title="El primer movimiento solo se elimina borrando el elemento" disabled>Eliminar</button>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="movimientos?accion=eliminar&id=${m.id}" class="boton-accion boton-eliminar" title="Eliminar movimiento" onclick="return confirm('¿Seguro que desea eliminar este movimiento?');">Eliminar</a>
-                    </c:otherwise>
-                </c:choose>
+                <c:if test="${fn:contains(pageScope.rolesString, 'coordinador')}">
+                    <a href="movimientos?accion=editar&id=${m.id}" class="boton-accion" title="Modificar movimiento">Modificar</a>
+                    <c:choose>
+                        <c:when test="${status.last}">
+                            <button class="boton-accion boton-eliminar" title="El primer movimiento solo se elimina borrando el elemento" disabled>Eliminar</button>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="movimientos?accion=eliminar&id=${m.id}" class="boton-accion boton-eliminar" title="Eliminar movimiento" onclick="return confirm('¿Seguro que desea eliminar este movimiento?');">Eliminar</a>
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
             </td>
         </tr>
     </c:forEach>
