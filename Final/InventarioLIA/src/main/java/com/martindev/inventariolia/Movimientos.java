@@ -4,6 +4,10 @@
  */
 package com.martindev.inventariolia;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,8 +24,6 @@ import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  *
@@ -67,9 +69,11 @@ public class Movimientos implements Serializable {
     private String comentario;
     @JoinColumn(name = "nro_lia", referencedColumnName = "nro_lia")
     @ManyToOne
+    @JsonbTransient
     private Elementos nroLia;
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
+    @jakarta.json.bind.annotation.JsonbTransient
     private Usuarios userId;
 
     public Movimientos() {

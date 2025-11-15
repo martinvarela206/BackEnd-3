@@ -25,6 +25,13 @@ public class AuthFilter implements Filter {
         HttpSession session = request.getSession(false);
         String uri = request.getRequestURI();
 
+
+        // Permitir acceso libre a la API REST (Svelte)
+        if (uri.contains("/api/")) {
+            chain.doFilter(req, res);
+            return;
+        }
+
         // Permitir acceso libre a login y recursos estáticos
         if (uri.endsWith("login") || uri.endsWith("login.jsp") || uri.endsWith(".css") || uri.endsWith(".js") || uri.endsWith(".png")) {
             chain.doFilter(req, res);

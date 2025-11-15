@@ -4,6 +4,10 @@
  */
 package com.martindev.inventariolia;
 
+import java.io.Serializable;
+import java.util.Collection;
+
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,8 +20,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
-import java.io.Serializable;
-import java.util.Collection;
 
 /**
  *
@@ -56,6 +58,7 @@ public class Elementos implements Serializable {
     @Column(name = "cantidad")
     private Integer cantidad;
     @OneToMany(mappedBy = "nroLia")
+    @JsonbTransient
     private Collection<Movimientos> movimientosCollection;
 
     public Elementos() {

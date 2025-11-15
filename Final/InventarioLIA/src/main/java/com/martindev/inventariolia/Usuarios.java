@@ -7,6 +7,7 @@ package com.martindev.inventariolia;
 import java.io.Serializable;
 import java.util.Collection;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,8 +57,10 @@ public class Usuarios implements Serializable {
     @Column(name = "password", nullable = false, length = 100)
     private String password;
     @ManyToMany(mappedBy = "usuariosCollection", fetch = FetchType.EAGER)
+    @JsonbTransient
     private Collection<Roles> rolesCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonbTransient
     private Collection<Movimientos> movimientosCollection;
 
     public Usuarios() {
