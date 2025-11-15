@@ -8,25 +8,79 @@
     }
     pageContext.setAttribute("rolesString", sb.toString());
 %>
-<div style="background:#eee; padding:10px; margin-bottom:20px;">
-    <c:choose>
-        <c:when test="${not empty sessionScope.usuario}">
-            Bienvenido, <b>${sessionScope.usuario.nombre}</b>
-            |
-            <a href="/">Inicio</a>
-            <c:if test="${fn:contains(pageScope.rolesString, 'coordinador') || fn:contains(pageScope.rolesString, 'tecnico') || fn:contains(pageScope.rolesString, 'revisor')}">
-                |
-                <a href="elementos">Elementos</a>
+<style>
+    .navbar {
+        background: #1976d2;
+        color: #fff;
+        padding: 0 0 0 0;
+        margin-bottom: 32px;
+        box-shadow: 0 2px 8px #bbb;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .navbar-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+        height: 54px;
+    }
+    .navbar-links {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+    .navbar a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 7px 16px;
+        border-radius: 4px;
+        transition: background 0.18s;
+        font-size: 1em;
+    }
+    .navbar a:hover {
+        background: #125ea2;
+    }
+    .navbar .navbar-user {
+        font-weight: 600;
+        margin-right: 18px;
+        letter-spacing: 0.5px;
+    }
+    .navbar .navbar-logout {
+        background: #c62828;
+        color: #fff;
+        margin-left: 10px;
+        transition: background 0.18s;
+    }
+    .navbar .navbar-logout:hover {
+        background: #8e1c1c;
+    }
+</style>
+<nav class="navbar">
+    <div class="navbar-content">
+        <div class="navbar-links">
+            <a href="${pageContext.request.contextPath}/"><b>Inicio</b></a>
+            <c:if test="${not empty sessionScope.usuario}">
+                <c:if test="${fn:contains(pageScope.rolesString, 'coordinador') || fn:contains(pageScope.rolesString, 'tecnico') || fn:contains(pageScope.rolesString, 'revisor')}">
+                    <a href="elementos">Elementos</a>
+                </c:if>
+                <c:if test="${fn:contains(pageScope.rolesString, 'coordinador')}">
+                    <a href="movimientos">Movimientos</a>
+                </c:if>
             </c:if>
-            <c:if test="${fn:contains(pageScope.rolesString, 'coordinador')}">
-                |
-                <a href="movimientos">Movimientos</a>
-            </c:if>
-            |
-            <a href="logout">Cerrar sesiÃ³n</a>
-        </c:when>
-        <c:otherwise>
-            <a href="login.jsp">Iniciar sesiÃ³n</a>
-        </c:otherwise>
-    </c:choose>
-</div>
+        </div>
+        <div class="navbar-links">
+            <c:choose>
+                <c:when test="${not empty sessionScope.usuario}">
+                    <span class="navbar-user">Bienvenido, ${sessionScope.usuario.nombre}</span>
+                    <a href="logout" class="navbar-logout">Cerrar sesión</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="login.jsp">Iniciar sesión</a>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+</nav>
