@@ -1,67 +1,52 @@
 
 
 <script>
-  import { onMount } from 'svelte';
-  import { route } from './lib/router.js';
   import { user, alerta } from './lib/stores.js';
   import Navbar from './lib/components/Navbar.svelte';
-  import LoginForm from './lib/components/LoginForm.svelte';
+  import Welcome from './lib/components/Welcome.svelte';
   import ElementosList from './lib/components/ElementosList.svelte';
   import InicioElementos from './lib/components/InicioElementos.svelte';
   import MovimientosList from './lib/components/MovimientosList.svelte';
-  import ElementoForm from './lib/components/ElementoForm.svelte';
-  import MovimientoForm from './lib/components/MovimientoForm.svelte';
   import ElementoDetalle from './lib/components/ElementoDetalle.svelte';
   import EditarElementoForm from './lib/components/EditarElementoForm.svelte';
   import EditarMovimientoForm from './lib/components/EditarMovimientoForm.svelte';
+  import NuevoMovimientoForm from './lib/components/NuevoMovimientoForm.svelte';
+  import Router from 'svelte-spa-router';
 
 
-  // Usar la suscripción reactiva de Svelte
-  $: currentRoute = $route;
   $: currentUser = $user;
   $: currentAlerta = $alerta;
 
-  function handleLogin(e) {
-    user.set(e.detail.user);
-    window.location.hash = '/';
-    alerta.set('Bienvenido ' + e.detail.user.username);
+  // Auto-limpiar la alerta después de 3 segundos
+  $: if (currentAlerta) {
+    setTimeout(() => {
+      alerta.set('');
+    }, 3000);
   }
-  function handleLogout() {
-    user.set(null);
-    window.location.hash = '/login';
-    alerta.set('Sesión cerrada');
-  }
+
+  // Definir rutas para svelte-spa-router
+  const routes = {
+    '/': Welcome,
+    '/inicio': InicioElementos,
+    '/elementos': ElementosList,
+    '/movimientos': MovimientosList,
+    '/elemento/editar/:nroLia': EditarElementoForm,
+    '/movimiento/editar/:id': EditarMovimientoForm,
+    '/movimiento/nuevo/:nroLia': NuevoMovimientoForm,
+    '/movimiento/nuevo': NuevoMovimientoForm,
+    '/elemento/:nroLia': ElementoDetalle
+  };
 </script>
 
-<main class="min-h-screen bg-gray-50">
-  <Navbar {currentUser} />
-  {#if currentAlerta}
-    <div class="max-w-xl mx-auto my-4 p-3 bg-green-100 text-green-800 border border-green-300 rounded">{currentAlerta}</div>
-  {/if}
-  <section class="container mx-auto">
-    {#if currentRoute === '/login'}
-      <LoginForm on:login={handleLogin} />
-    {:else if currentRoute === '/elementos'}
-      <ElementosList />
-      {#if currentUser && currentUser.role === 'coordinador'}
-        <ElementoForm onSuccess={() => window.location.reload()} />
-      {/if}
-    {:else if $route === '/movimientos'}
-      <MovimientosList />
-      {#if $user && $user.role === 'coordinador'}
-        <MovimientoForm onSuccess={() => window.location.reload()} />
-      {/if}
-    {:else if $route && $route.startsWith('/elemento/editar/')}
-      <EditarElementoForm nroLia={$route.split('/')[3]} />
-    {:else if $route && $route.startsWith('/movimiento/editar/')}
-      <EditarMovimientoForm id={$route.split('/')[3]} />
-    {:else if $route && $route.startsWith('/elemento/')}
-      <ElementoDetalle nroLia={$route.split('/')[2]} />
-    {:else}
-      <InicioElementos />
+  <main class="min-h-screen bg-gray-50">
+    <Navbar />
+    {#if currentAlerta}
+      <div class="max-w-xl mx-auto my-4 p-3 bg-green-100 text-green-800 border border-green-300 rounded">{currentAlerta}</div>
     {/if}
-  </section>
-</main>
+    <section class="container mx-auto">
+      <Router {routes} />
+    </section>
+  </main>
 
 <style>
   main {

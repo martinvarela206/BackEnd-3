@@ -3,6 +3,10 @@
 <%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .formulario {
         width: 420px;
         margin: 40px auto;
@@ -79,7 +83,7 @@
         <div class="mensaje-error">${error}</div>
     </c:if>
     <h2 style="text-align:center; color:#1976d2; margin-bottom:24px;">Editar Movimiento</h2>
-    <form action="movimientos" method="post">
+    <form action="movimientos" method="post" accept-charset="UTF-8">
         <input type="hidden" name="accion" value="modificar" />
         <input type="hidden" name="id" value="${movimiento.id}" />
         <label>Nro LIA:

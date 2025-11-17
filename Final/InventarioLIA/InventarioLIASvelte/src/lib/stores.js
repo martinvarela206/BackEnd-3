@@ -1,4 +1,9 @@
 import { writable } from 'svelte/store';
 
-export const user = writable(null);
+// Simulación de usuario logeado para pruebas
+export const user = writable({
+  nombre: 'Admin Demo',
+  username: 'admin',
+  roles: ['user_admin', 'coordinador', 'tecnico']
+});
 export const alerta = writable('');

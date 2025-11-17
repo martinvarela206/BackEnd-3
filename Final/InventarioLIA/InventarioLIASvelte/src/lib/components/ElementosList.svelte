@@ -29,33 +29,47 @@ async function eliminar(nroLia) {
 }
 </script>
 
-<div class="p-4">
-  <h2 class="text-2xl font-bold mb-4">Elementos</h2>
+<div>
+  <h2 class="text-center mt-10 text-[#1976d2] text-2xl font-semibold">Lista de Elementos</h2>
+  {#if $user && $user.roles && $user.roles.includes('tecnico')}
+    <a href="#/elementos/nuevo" class="inline-block mt-5 ml-[10%] bg-[#43a047] text-white px-5 py-2 rounded font-medium transition-colors duration-200 hover:bg-[#2e7031] no-underline">Añadir Elemento</a>
+  {/if}
   {#if error}
-    <div class="text-red-500">{error}</div>
+    <div class="text-red-500 text-center mt-4">{error}</div>
   {:else}
-    <table class="min-w-full border">
+    <table class="w-4/5 mx-auto mt-8 shadow-md bg-white rounded-lg overflow-hidden" style="border-collapse: collapse;">
       <thead>
-        <tr class="bg-gray-100">
-          <th class="p-2 border">Nro Lia</th>
-          <th class="p-2 border">Tipo</th>
-          <th class="p-2 border">Descripción</th>
-          <th class="p-2 border">Cantidad</th>
-          <th class="p-2 border">Acciones</th>
+        <tr class="bg-[#1976d2] text-white">
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Nro LIA</th>
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Tipo</th>
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Descripción</th>
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Cantidad</th>
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {#each elementos as el}
-          <tr>
-            <td class="p-2 border">{el.nroLia}</td>
-            <td class="p-2 border">{el.tipo}</td>
-            <td class="p-2 border">{el.descripcion}</td>
-            <td class="p-2 border">{el.cantidad}</td>
-            <td class="p-2 border">
-              <a class="text-blue-700 underline mr-2" href={`#/elemento/${el.nroLia}`}>Ver</a>
-              {#if $user && $user.role === 'coordinador'}
-                <a class="text-green-700 underline mr-2" href={`#/elemento/editar/${el.nroLia}`}>Editar</a>
-                <button class="text-red-600 ml-2" on:click={() => eliminar(el.nroLia)}>Eliminar</button>
+        {#each elementos as el, i}
+          <tr class="hover:bg-[#f1f7ff] transition-colors" class:border-b={i < elementos.length - 1} class:border-gray-200={i < elementos.length - 1}>
+            <td class="py-3 px-5">{el.nroLia}</td>
+            <td class="py-3 px-5">{el.tipo}</td>
+            <td class="py-3 px-5">
+              <a href={`#/elemento/${el.nroLia}`} class="text-[#1976d2] hover:underline">{el.descripcion}</a>
+            </td>
+            <td class="py-3 px-5">{el.cantidad}</td>
+            <td class="py-3 px-5">
+              {#if $user && $user.roles && $user.roles.includes('coordinador')}
+                <button 
+                  on:click={() => window.location.hash = `/elemento/editar/${el.nroLia}`}
+                  class="bg-[#1976d2] text-white border-none rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm transition-colors duration-200 hover:bg-[#125ea2]"
+                >
+                  Modificar
+                </button>
+                <button 
+                  on:click={() => eliminar(el.nroLia)}
+                  class="bg-[#c62828] text-white border-none rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm transition-colors duration-200 hover:bg-[#8e1c1c]"
+                >
+                  Eliminar
+                </button>
               {/if}
             </td>
           </tr>

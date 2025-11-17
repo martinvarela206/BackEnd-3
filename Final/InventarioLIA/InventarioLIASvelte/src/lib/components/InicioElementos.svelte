@@ -31,27 +31,33 @@ onMount(cargar);
 
 </script>
 
-<div class="p-4">
-  <h2 class="text-2xl font-bold mb-4">Inventario - Resumen</h2>
+<div>
+  <h2 class="text-center mt-10 text-[#1976d2] text-2xl font-semibold">Resumen de Elementos</h2>
   {#if error}
-    <div class="text-red-500">{error}</div>
+    <div class="text-red-500 text-center mt-4">{error}</div>
   {:else if cargando}
-    <div class="text-gray-500">Cargando datos...</div>
-  {:else}
-    <table class="min-w-full border">
+    <div class="text-gray-500 text-center mt-4">Cargando datos...</div>
+  {:else if elementosConUbicacion.length > 0}
+    <table class="w-4/5 mx-auto mt-8 shadow-md bg-white rounded-lg overflow-hidden" style="border-collapse: collapse;">
       <thead>
-        <tr class="bg-gray-100">
-          <th class="p-2 border">Nro LIA</th>
-          <th class="p-2 border">Descripción</th>
-          <th class="p-2 border">Ubicación actual</th>
+        <tr class="bg-[#1976d2] text-white">
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Nro LIA</th>
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Descripción</th>
+          <th class="py-3 px-5 text-left font-semibold tracking-wide">Ubicación actual</th>
         </tr>
       </thead>
       <tbody>
-        {#each elementosConUbicacion as el}
-          <tr>
-            <td class="p-2 border">{el.nroLia}</td>
-            <td class="p-2 border">{el.descripcion}</td>
-            <td class="p-2 border">{el.ubicacion}</td>
+        {#each elementosConUbicacion as el, i}
+          <tr class="hover:bg-[#f1f7ff] transition-colors" class:border-b={i < elementosConUbicacion.length - 1} class:border-gray-200={i < elementosConUbicacion.length - 1}>
+            <td class="py-3 px-5">{el.nroLia}</td>
+            <td class="py-3 px-5">{el.descripcion}</td>
+            <td class="py-3 px-5">
+              {#if el.ubicacion === '--' || el.ubicacion === '-e'}
+                <span class="text-gray-500">Sin movimientos</span>
+              {:else}
+                {el.ubicacion}
+              {/if}
+            </td>
           </tr>
         {/each}
       </tbody>

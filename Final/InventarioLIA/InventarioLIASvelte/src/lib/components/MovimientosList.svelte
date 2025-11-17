@@ -29,36 +29,49 @@ async function eliminar(id) {
 }
 </script>
 
-<div class="p-4">
-  <h2 class="text-2xl font-bold mb-4">Movimientos</h2>
+<div>
+  <h2 class="text-center mt-10 text-[#1976d2] text-2xl font-semibold">Lista de Movimientos</h2>
+  {#if $user && $user.roles && $user.roles.includes('coordinador')}
+    <a href="#/movimiento/nuevo" class="inline-block mt-5 ml-[5%] bg-[#43a047] text-white px-5 py-2 rounded font-medium transition-colors duration-200 hover:bg-[#2e7031] no-underline">Añadir Movimiento</a>
+  {/if}
   {#if error}
-    <div class="text-red-500">{error}</div>
+    <div class="text-red-500 text-center mt-4">{error}</div>
   {:else}
-    <table class="min-w-full border">
+    <table class="w-[90%] mx-auto mt-8 shadow-md bg-white rounded-lg overflow-hidden" style="border-collapse: collapse;">
       <thead>
-        <tr class="bg-gray-100">
-          <th class="p-2 border">ID</th>
-          <th class="p-2 border">Nro UNSJ</th>
-          <th class="p-2 border">Estado</th>
-          <th class="p-2 border">Ubicación</th>
-          <th class="p-2 border">Fecha</th>
-          <th class="p-2 border">Comentario</th>
-          <th class="p-2 border">Acciones</th>
+        <tr class="bg-[#1976d2] text-white">
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">ID</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Nro UNSJ</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Estado</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Ubicación</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Fecha</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Comentario</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {#each movimientos as m}
-          <tr>
-            <td class="p-2 border">{m.id}</td>
-            <td class="p-2 border">{m.nroUnsj}</td>
-            <td class="p-2 border">{m.estado}</td>
-            <td class="p-2 border">{m.ubicacion}</td>
-            <td class="p-2 border">{m.fecha}</td>
-            <td class="p-2 border">{m.comentario}</td>
-            <td class="p-2 border">
-              {#if $user && $user.role === 'coordinador'}
-                <a class="text-green-700 underline mr-2" href={`#/movimiento/editar/${m.id}`}>Editar</a>
-                <button class="text-red-600 ml-2" on:click={() => eliminar(m.id)}>Eliminar</button>
+        {#each movimientos as m, i}
+          <tr class="hover:bg-[#f1f7ff] transition-colors" class:border-b={i < movimientos.length - 1} class:border-gray-200={i < movimientos.length - 1}>
+            <td class="py-2.5 px-3.5">{m.id}</td>
+            <td class="py-2.5 px-3.5">{m.nroUnsj}</td>
+            <td class="py-2.5 px-3.5">{m.estado}</td>
+            <td class="py-2.5 px-3.5">{m.ubicacion}</td>
+            <td class="py-2.5 px-3.5">{m.fecha}</td>
+            <td class="py-2.5 px-3.5">{m.comentario}</td>
+            <td class="py-2.5 px-3.5">
+              {#if $user && $user.roles && $user.roles.includes('coordinador')}
+                <button 
+                  on:click={() => window.location.hash = `/movimiento/editar/${m.id}`}
+                  class="bg-[#1976d2] text-white border-none rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm transition-colors duration-200 hover:bg-[#125ea2]"
+                >
+                  Modificar
+                </button>
+                <button 
+                  on:click={() => eliminar(m.id)}
+                  class="bg-[#c62828] text-white border-none rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm transition-colors duration-200 hover:bg-[#8e1c1c]"
+                >
+                  Eliminar
+                </button>
               {/if}
             </td>
           </tr>
@@ -66,4 +79,5 @@ async function eliminar(id) {
       </tbody>
     </table>
   {/if}
+  <a href="#/elementos" class="inline-block mt-6 ml-[5%] bg-[#bdbdbd] text-[#333] px-5 py-2 rounded font-medium transition-colors duration-200 hover:bg-[#888] hover:text-white no-underline">Volver a elementos</a>
 </div>

@@ -3,6 +3,10 @@
 <%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .tabla-movimientos {
         width: 90%;
         margin: 30px auto;

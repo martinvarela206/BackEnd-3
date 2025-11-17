@@ -54,6 +54,12 @@ export async function getMovimientos() {
   return res.json();
 }
 
+export async function getMovimientosByElemento(nroLia) {
+  const res = await fetch(`${API_BASE}/movimientos/elemento/${nroLia}`);
+  if (!res.ok) throw new Error('Error al obtener movimientos del elemento');
+  return res.json();
+}
+
 export async function getMovimiento(id) {
   const res = await fetch(`${API_BASE}/movimientos/${id}`);
   if (!res.ok) throw new Error('Movimiento no encontrado');

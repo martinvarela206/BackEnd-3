@@ -2,6 +2,10 @@
 <%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .formulario {
         width: 420px;
         margin: 40px auto;
@@ -77,7 +81,7 @@
     <c:if test="${not empty error}">
         <div class="mensaje-error">${error}</div>
     </c:if>
-    <form action="elementos" method="post">
+    <form action="elementos" method="post" accept-charset="UTF-8">
         <input type="hidden" name="accion" value="crear" />
         <label>Nro LIA:
             <input type="text" name="nroLia" required>

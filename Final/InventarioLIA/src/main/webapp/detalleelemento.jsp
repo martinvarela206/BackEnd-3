@@ -4,6 +4,10 @@
 <%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .tabla-detalle {
         width: 420px;
         margin: 30px auto 18px auto;

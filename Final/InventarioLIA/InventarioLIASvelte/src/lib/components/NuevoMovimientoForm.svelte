@@ -1,35 +1,42 @@
 <script>
 import { onMount } from 'svelte';
-import { getMovimiento, updateMovimiento, getElementos, getUsuarios } from '../api/inventario.js';
+import { createMovimiento, getElementos, getUsuarios } from '../api/inventario.js';
 import { alerta } from '../stores.js';
 export let params = {};
-let movimiento = null;
 let elementos = [];
 let usuarios = [];
+let movimiento = {
+  nroLia: '',
+  nroUnsj: '',
+  estado: 'ingresado',
+  ubicacion: '',
+  comentario: '',
+  userId: ''
+};
 let error = '';
 
-$: id = params.id;
+$: nroLia = params.nroLia;
 
 onMount(async () => {
   try {
-    if (id) {
-      movimiento = await getMovimiento(id);
-      elementos = await getElementos();
-      try {
-        usuarios = await getUsuarios();
-      } catch (e) {
-        console.warn('No se pudieron obtener usuarios:', e);
-        usuarios = [{ id: 1, nombre: 'Usuario Demo' }];
-      }
+    elementos = await getElementos();
+    // Si hay un nroLia en la URL, preseleccionarlo
+    if (nroLia) {
+      movimiento.nroLia = nroLia;
+    }
+    // Obtener usuarios (si el endpoint existe)
+    try {
+      usuarios = await getUsuarios();
+    } catch (e) {
+      console.warn('No se pudieron obtener usuarios:', e);
+      // Si no hay endpoint de usuarios, crear uno de prueba
+      usuarios = [{ id: 1, nombre: 'Usuario Demo' }];
+      movimiento.userId = 1;
     }
   } catch (e) {
     error = e.message;
   }
 });
-
-$: if (id && movimiento === null) {
-  getMovimiento(id).then(mov => movimiento = mov).catch(e => error = e.message);
-}
 
 async function handleSubmit(e) {
   e.preventDefault();
@@ -37,25 +44,32 @@ async function handleSubmit(e) {
   try {
     // Crear el objeto con la estructura que espera el backend
     const movimientoData = {
-      id: movimiento.id,
       nroUnsj: movimiento.nroUnsj || null,
       estado: movimiento.estado,
       ubicacion: movimiento.ubicacion,
       comentario: movimiento.comentario || null,
-      fecha: movimiento.fecha,
+      fecha: new Date().toISOString(),
       nroLia: { nroLia: movimiento.nroLia },
       userId: { id: parseInt(movimiento.userId) }
     };
-    await updateMovimiento(id, movimientoData);
-    alerta.set('Movimiento actualizado');
-    window.location.hash = '/movimientos';
+    await createMovimiento(movimientoData);
+    alerta.set('Movimiento creado exitosamente');
+    if (nroLia) {
+      window.location.hash = `/elemento/${nroLia}`;
+    } else {
+      window.location.hash = '/movimientos';
+    }
   } catch (e) {
     error = e.message;
   }
 }
 
 function cancelar() {
-  window.location.hash = '/movimientos';
+  if (nroLia) {
+    window.location.hash = `/elemento/${nroLia}`;
+  } else {
+    window.location.hash = '/movimientos';
+  }
 }
 </script>
 
@@ -131,15 +145,15 @@ function cancelar() {
   }
 </style>
 
-{#if movimiento}
 <div class="formulario">
   {#if error}
     <div class="mensaje-error">{error}</div>
   {/if}
-  <h2 style="text-align:center; color:#1976d2; margin-bottom:24px;">Editar Movimiento</h2>
+  <h2 style="text-align:center; color:#1976d2; margin-bottom:24px;">Nuevo Movimiento</h2>
   <form on:submit={handleSubmit}>
     <label>Nro LIA:
       <select bind:value={movimiento.nroLia} required>
+        <option value="">Seleccione un elemento</option>
         {#each elementos as e}
           <option value={e.nroLia}>{e.nroLia}</option>
         {/each}
@@ -165,6 +179,7 @@ function cancelar() {
     </label>
     <label>Usuario:
       <select bind:value={movimiento.userId} required>
+        <option value="">Seleccione un usuario</option>
         {#each usuarios as u}
           <option value={u.id}>{u.nombre}</option>
         {/each}
@@ -174,6 +189,3 @@ function cancelar() {
     <button type="button" class="boton-cancelar" on:click={cancelar}>Cancelar</button>
   </form>
 </div>
-{:else if error}
-<div class="mensaje-error" style="width: 420px; margin: 40px auto;">{error}</div>
-{/if}

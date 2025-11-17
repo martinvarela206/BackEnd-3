@@ -1,6 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .formulario-login {
         width: 340px;
         margin: 60px auto 0 auto;

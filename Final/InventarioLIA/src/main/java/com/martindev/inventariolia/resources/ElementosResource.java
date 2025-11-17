@@ -52,7 +52,7 @@ public class ElementosResource {
 
     @GET
     @Path("{id}")
-    public Elementos getById(@PathParam("id") Integer id) {
+    public Elementos getById(@PathParam("id") String id) {
         return elementosFacade.find(id);
     }
 
@@ -64,15 +64,15 @@ public class ElementosResource {
 
     @PUT
     @Path("{id}")
-    public Response update(@PathParam("id") Integer id, Elementos elemento) {
-        elemento.setNroLia(String.valueOf(id));
+    public Response update(@PathParam("id") String id, Elementos elemento) {
+        elemento.setNroLia(id);
         elementosFacade.edit(elemento);
         return Response.ok().build();
     }
 
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") Integer id) {
+    public Response delete(@PathParam("id") String id) {
         Elementos elemento = elementosFacade.find(id);
         if (elemento != null) {
             elementosFacade.remove(elemento);

@@ -3,6 +3,10 @@
 <%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
     .tabla-elementos {
         width: 80%;
         margin: 30px auto;
