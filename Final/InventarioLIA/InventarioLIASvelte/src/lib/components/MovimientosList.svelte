@@ -40,24 +40,24 @@ async function eliminar(id) {
     <table class="w-[90%] mx-auto mt-8 shadow-md bg-white rounded-lg overflow-hidden" style="border-collapse: collapse;">
       <thead>
         <tr class="bg-[#1976d2] text-white">
-          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">ID</th>
-          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Nro UNSJ</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Nro LIA</th>
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Estado</th>
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Ubicación</th>
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Fecha</th>
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Comentario</th>
+          <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Usuario</th>
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Acciones</th>
         </tr>
       </thead>
       <tbody>
         {#each movimientos as m, i}
           <tr class="hover:bg-[#f1f7ff] transition-colors" class:border-b={i < movimientos.length - 1} class:border-gray-200={i < movimientos.length - 1}>
-            <td class="py-2.5 px-3.5">{m.id}</td>
-            <td class="py-2.5 px-3.5">{m.nroUnsj}</td>
+            <td class="py-2.5 px-3.5">{m.nroLia}</td>
             <td class="py-2.5 px-3.5">{m.estado}</td>
             <td class="py-2.5 px-3.5">{m.ubicacion}</td>
             <td class="py-2.5 px-3.5">{m.fecha}</td>
             <td class="py-2.5 px-3.5">{m.comentario}</td>
+            <td class="py-2.5 px-3.5">{m.userName}</td>
             <td class="py-2.5 px-3.5">
               {#if $user && $user.roles && $user.roles.includes('coordinador')}
                 <button 
@@ -79,5 +79,4 @@ async function eliminar(id) {
       </tbody>
     </table>
   {/if}
-  <a href="#/elementos" class="inline-block mt-6 ml-[5%] bg-[#bdbdbd] text-[#333] px-5 py-2 rounded font-medium transition-colors duration-200 hover:bg-[#888] hover:text-white no-underline">Volver a elementos</a>
 </div>

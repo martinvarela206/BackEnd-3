@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%@ include file="WEB-INF/jspf/navbar.jspf" %>
 
@@ -7,6 +8,7 @@
     body {
         margin: 0;
         padding: 0;
+        font-family: system-ui, -apple-system, sans-serif;
     }
     .tabla-detalle {
         width: 420px;
@@ -49,13 +51,14 @@
         background: #1976d2;
         color: #fff;
         font-weight: 600;
-        letter-spacing: 1px;
+        letter-spacing: 0.05em;
     }
     .tabla-movimientos tr:last-child td {
         border-bottom: none;
     }
     .tabla-movimientos tr:hover {
         background: #f1f7ff;
+        transition: background 0.2s;
     }
     .enlace-nuevo {
         display: inline-block;
@@ -66,6 +69,7 @@
         border-radius: 5px;
         text-decoration: none;
         font-weight: 500;
+        font-family: system-ui, sans-serif;
         transition: background 0.2s;
     }
     .enlace-nuevo:hover {
@@ -103,21 +107,6 @@
         color: #fff;
         box-shadow: none;
     }
-    .enlace-volver {
-        display: inline-block;
-        margin: 24px 0 0 5%;
-        background: #bdbdbd;
-        color: #333;
-        padding: 8px 18px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: background 0.2s;
-    }
-    .enlace-volver:hover {
-        background: #888;
-        color: #fff;
-    }
 </style>
 
 <h2 style="text-align:center; margin-top:40px; color:#1976d2;">Detalle del Elemento</h2>
@@ -138,16 +127,18 @@
             <th>Estado</th>
             <th>Ubicación</th>
             <th>Comentario</th>
+            <th>Usuario</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
     <c:forEach var="m" items="${movimientos}" varStatus="status">
         <tr>
-            <td>${m.fecha}</td>
+            <td><fmt:formatDate value="${m.fecha}" pattern="dd-MM-yy HH:mm" /></td>
             <td>${m.estado}</td>
             <td>${m.ubicacion}</td>
             <td>${m.comentario}</td>
+            <td>${m.userId.nombre}</td>
             <td>
                 <c:if test="${fn:contains(pageScope.rolesString, 'coordinador')}">
                     <a href="movimientos?accion=editar&id=${m.id}" class="boton-accion" title="Modificar movimiento">Modificar</a>
@@ -165,4 +156,3 @@
     </c:forEach>
     </tbody>
 </table>
-<a href="elementos" class="enlace-volver">Volver al listado</a>

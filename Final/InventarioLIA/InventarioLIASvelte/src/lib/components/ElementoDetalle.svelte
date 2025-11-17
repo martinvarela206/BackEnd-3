@@ -61,6 +61,7 @@ async function eliminarMovimiento(id) {
         <th>Estado</th>
         <th>Ubicación</th>
         <th>Comentario</th>
+        <th>Usuario</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -71,6 +72,7 @@ async function eliminarMovimiento(id) {
           <td>{m.estado}</td>
           <td>{m.ubicacion}</td>
           <td>{m.comentario}</td>
+          <td>{m.userName}</td>
           <td>
             {#if esCoordinador}
               <a href="#/movimiento/editar/{m.id}" class="boton-accion" title="Modificar movimiento">Modificar</a>
@@ -85,7 +87,6 @@ async function eliminarMovimiento(id) {
       {/each}
     </tbody>
   </table>
-  <a href="#/elementos" class="enlace-volver">Volver al listado</a>
 {/if}
 
 <style>
@@ -183,20 +184,5 @@ async function eliminarMovimiento(id) {
     background: #bdbdbd;
     color: #fff;
     box-shadow: none;
-  }
-  .enlace-volver {
-    display: inline-block;
-    margin: 24px 0 0 5%;
-    background: #bdbdbd;
-    color: #333;
-    padding: 8px 18px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background 0.2s;
-  }
-  .enlace-volver:hover {
-    background: #888;
-    color: #fff;
   }
 </style>

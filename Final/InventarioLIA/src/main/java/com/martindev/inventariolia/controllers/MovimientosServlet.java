@@ -31,10 +31,14 @@ public class MovimientosServlet extends HttpServlet {
             throws ServletException, IOException {
         String accion = request.getParameter("accion");
         if ("nuevo".equals(accion)) {
+            String nroLia = request.getParameter("nroLia");
             List<Elementos> elementos = elementosFacade.findAll();
             List<Usuarios> usuarios = usuariosFacade.findAll();
             request.setAttribute("elementos", elementos);
             request.setAttribute("usuarios", usuarios);
+            if (nroLia != null && !nroLia.isEmpty()) {
+                request.setAttribute("nroLiaSeleccionado", nroLia);
+            }
             request.getRequestDispatcher("nuevomovimiento.jsp").forward(request, response);
         } else if ("editar".equals(accion)) {
             String id = request.getParameter("id");
@@ -45,6 +49,13 @@ public class MovimientosServlet extends HttpServlet {
             request.setAttribute("elementos", elementos);
             request.setAttribute("usuarios", usuarios);
             request.getRequestDispatcher("editarmovimiento.jsp").forward(request, response);
+        } else if ("eliminar".equals(accion)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            Movimientos m = movimientosFacade.find(id);
+            if (m != null) {
+                movimientosFacade.remove(m);
+            }
+            response.sendRedirect("movimientos");
         } else {
             List<Movimientos> lista = movimientosFacade.findAll();
             request.setAttribute("lista", lista);

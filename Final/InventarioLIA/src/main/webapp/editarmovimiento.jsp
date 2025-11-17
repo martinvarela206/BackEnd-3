@@ -6,6 +6,7 @@
     body {
         margin: 0;
         padding: 0;
+        font-family: system-ui, -apple-system, sans-serif;
     }
     .formulario {
         width: 420px;
@@ -28,6 +29,7 @@
         border: 1px solid #bdbdbd;
         border-radius: 4px;
         font-size: 1em;
+        font-family: system-ui, sans-serif;
         box-sizing: border-box;
         background: #f7fafd;
         transition: border 0.2s;
@@ -46,6 +48,7 @@
         cursor: pointer;
         font-size: 1em;
         font-weight: 500;
+        font-family: system-ui, sans-serif;
         transition: background 0.2s;
     }
     .boton-form:hover {
@@ -60,6 +63,7 @@
         text-decoration: none;
         font-size: 1em;
         font-weight: 500;
+        font-family: system-ui, sans-serif;
         transition: background 0.2s;
     }
     .boton-cancelar:hover {

@@ -15,7 +15,7 @@
         padding: 0 0 0 0;
         margin-bottom: 32px;
         box-shadow: 0 2px 8px #bbb;
-        font-family: 'Segoe UI', Arial, sans-serif;
+        font-family: system-ui, -apple-system, sans-serif;
     }
     .navbar-content {
         display: flex;

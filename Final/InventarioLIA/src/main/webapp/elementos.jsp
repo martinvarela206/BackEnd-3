@@ -6,6 +6,7 @@
     body {
         margin: 0;
         padding: 0;
+        font-family: system-ui, -apple-system, sans-serif;
     }
     .tabla-elementos {
         width: 80%;
@@ -17,7 +18,7 @@
         overflow: hidden;
     }
     .tabla-elementos th, .tabla-elementos td {
-        padding: 12px 18px;
+        padding: 12px 20px;
         border-bottom: 1px solid #eee;
         text-align: left;
     }
@@ -25,13 +26,14 @@
         background: #1976d2;
         color: #fff;
         font-weight: 600;
-        letter-spacing: 1px;
+        letter-spacing: 0.05em;
     }
     .tabla-elementos tr:last-child td {
         border-bottom: none;
     }
     .tabla-elementos tr:hover {
         background: #f1f7ff;
+        transition: background 0.2s;
     }
     .boton-accion {
         background: #1976d2;
@@ -41,7 +43,8 @@
         padding: 6px 14px;
         margin: 0 2px;
         cursor: pointer;
-        font-size: 0.95em;
+        font-size: 0.875rem;
+        font-family: system-ui, sans-serif;
         transition: background 0.2s;
     }
     .boton-accion:hover {

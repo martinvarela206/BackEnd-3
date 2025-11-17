@@ -1,5 +1,6 @@
 package com.martindev.inventariolia.resources;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import com.martindev.inventariolia.Elementos;
@@ -35,18 +36,61 @@ public class MovimientosResource {
     private UsuariosFacade usuariosFacade;
 
     @GET
-    public List<Movimientos> getAll() {
-        return movimientosFacade.findAll();
+    public Response getAll() {
+        List<Movimientos> movimientos = movimientosFacade.findAll();
+        var jsonArray = Json.createArrayBuilder();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm");
+        
+        for (Movimientos m : movimientos) {
+            String userName = (m.getUserId() != null) ? m.getUserId().getNombre() : "";
+            String nroLiaValue = (m.getNroLia() != null) ? m.getNroLia().getNroLia() : "";
+            String fechaFormateada = (m.getFecha() != null) ? sdf.format(m.getFecha()) : "";
+            
+            jsonArray.add(Json.createObjectBuilder()
+                .add("id", m.getId())
+                .add("nroUnsj", m.getNroUnsj() != null ? m.getNroUnsj() : "")
+                .add("estado", m.getEstado())
+                .add("ubicacion", m.getUbicacion() != null ? m.getUbicacion() : "")
+                .add("fecha", fechaFormateada)
+                .add("comentario", m.getComentario() != null ? m.getComentario() : "")
+                .add("nroLia", nroLiaValue)
+                .add("userName", userName)
+            );
+        }
+        
+        return Response.ok(jsonArray.build()).build();
     }
 
     @GET
     @Path("elemento/{nroLia}")
-    public List<Movimientos> getByElemento(@PathParam("nroLia") String nroLia) {
+    public Response getByElemento(@PathParam("nroLia") String nroLia) {
         Elementos elemento = elementosFacade.find(nroLia);
-        if (elemento != null) {
-            return movimientosFacade.findByNroLia(elemento);
+        if (elemento == null) {
+            return Response.ok(Json.createArrayBuilder().build()).build();
         }
-        return List.of();
+        
+        List<Movimientos> movimientos = movimientosFacade.findByNroLia(elemento);
+        var jsonArray = Json.createArrayBuilder();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm");
+        
+        for (Movimientos m : movimientos) {
+            String userName = (m.getUserId() != null) ? m.getUserId().getNombre() : "";
+            String nroLiaValue = (m.getNroLia() != null) ? m.getNroLia().getNroLia() : "";
+            String fechaFormateada = (m.getFecha() != null) ? sdf.format(m.getFecha()) : "";
+            
+            jsonArray.add(Json.createObjectBuilder()
+                .add("id", m.getId())
+                .add("nroUnsj", m.getNroUnsj() != null ? m.getNroUnsj() : "")
+                .add("estado", m.getEstado())
+                .add("ubicacion", m.getUbicacion() != null ? m.getUbicacion() : "")
+                .add("fecha", fechaFormateada)
+                .add("comentario", m.getComentario() != null ? m.getComentario() : "")
+                .add("nroLia", nroLiaValue)
+                .add("userName", userName)
+            );
+        }
+        
+        return Response.ok(jsonArray.build()).build();
     }
 
     @GET
