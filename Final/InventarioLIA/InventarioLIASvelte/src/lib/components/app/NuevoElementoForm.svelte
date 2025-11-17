@@ -1,6 +1,6 @@
 <script>
-  import { alerta, user } from '../stores.js';
-  import { createElemento, createMovimiento } from '../api/inventario.js';
+  import { alerta, user } from '../../stores.js';
+  import { createElemento, createMovimiento } from '../../api/inventario.js';
 
   let elemento = {
     nroLia: '',

@@ -1,6 +1,6 @@
 <script>
 import { onMount } from 'svelte';
-import { getElementos, getUltimaUbicacionElemento } from '../api/inventario.js';
+import { getElementos, getUltimaUbicacionElemento } from '../../api/inventario.js';
 let elementosConUbicacion = [];
 let error = '';
 let cargando = true;

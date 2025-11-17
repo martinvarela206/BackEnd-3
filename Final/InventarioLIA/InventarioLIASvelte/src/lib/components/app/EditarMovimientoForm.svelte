@@ -1,7 +1,7 @@
 <script>
 import { onMount } from 'svelte';
-import { getMovimiento, updateMovimiento, getElementos, getUsuarios } from '../api/inventario.js';
-import { alerta } from '../stores.js';
+import { getMovimiento, updateMovimiento, getElementos, getUsuarios } from '../../api/inventario.js';
+import { alerta } from '../../stores.js';
 export let params = {};
 let movimiento = null;
 let elementos = [];

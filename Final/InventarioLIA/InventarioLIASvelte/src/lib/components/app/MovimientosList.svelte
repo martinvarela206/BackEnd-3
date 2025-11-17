@@ -1,8 +1,8 @@
 
 <script>
 import { onMount } from 'svelte';
-import { getMovimientos, deleteMovimiento } from '../api/inventario.js';
-import { user, alerta } from '../stores.js';
+import { getMovimientos, deleteMovimiento } from '../../api/inventario.js';
+import { user, alerta } from '../../stores.js';
 let movimientos = [];
 let error = '';
 

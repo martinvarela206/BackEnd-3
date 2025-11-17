@@ -1,8 +1,8 @@
 
 
 <script>
-  import Welcome from './lib/components/Welcome.svelte';
-  import Inventario from './lib/components/Inventario.svelte';
+  import Welcome from './lib/components/welcome/Welcome.svelte';
+  import Inventario from './lib/components/app/Inventario.svelte';
   import Router from 'svelte-spa-router';
 
   // Definir rutas principales de la aplicación

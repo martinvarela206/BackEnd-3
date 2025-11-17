@@ -1,6 +1,7 @@
 <script>
-  import { alerta } from '../stores.js';
+  import { alerta } from '../../stores.js';
   import Navbar from './Navbar.svelte';
+  import Footer from '../common/Footer.svelte';
   import ElementosList from './ElementosList.svelte';
   import InicioElementos from './InicioElementos.svelte';
   import MovimientosList from './MovimientosList.svelte';
@@ -34,20 +35,30 @@
   };
 </script>
 
-<div class="min-h-screen bg-[#fef8e7]">
+<div class="app-container">
   <Navbar />
   {#if currentAlerta}
     <div class="max-w-xl mx-auto my-4 p-3 bg-[#fbc101] text-[#111] border-2 border-[#dba800] rounded-lg font-medium shadow-md">
       {currentAlerta}
     </div>
   {/if}
-  <section class="container mx-auto">
+  <section class="container mx-auto content-section">
     <Router {routes} />
   </section>
+  <Footer dark={true} />
 </div>
 
 <style>
-  div {
+  .app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #fef8e7;
     font-family: system-ui, sans-serif;
+  }
+
+  .content-section {
+    flex: 1;
+    padding-bottom: 32px;
   }
 </style>
