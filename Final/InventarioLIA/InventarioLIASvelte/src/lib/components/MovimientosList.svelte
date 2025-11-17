@@ -30,16 +30,16 @@ async function eliminar(id) {
 </script>
 
 <div>
-  <h2 class="text-center mt-10 text-[#1976d2] text-2xl font-semibold">Lista de Movimientos</h2>
+  <h2 class="text-center mt-10 text-[#dba800] text-2xl font-semibold">Lista de Movimientos</h2>
   {#if $user && $user.roles && $user.roles.includes('coordinador')}
-    <a href="#/movimiento/nuevo" class="inline-block mt-5 ml-[5%] bg-[#43a047] text-white px-5 py-2 rounded font-medium transition-colors duration-200 hover:bg-[#2e7031] no-underline">Añadir Movimiento</a>
+    <a href="#/movimiento/nuevo" class="inline-block mt-5 ml-[5%] bg-[#dba800] text-[#111] px-5 py-2 rounded font-semibold transition-colors duration-200 hover:bg-[#fbc101] no-underline border-2 border-[#dba800] hover:border-[#fbc101]">Añadir Movimiento</a>
   {/if}
   {#if error}
     <div class="text-red-500 text-center mt-4">{error}</div>
   {:else}
     <table class="w-[90%] mx-auto mt-8 shadow-md bg-white rounded-lg overflow-hidden" style="border-collapse: collapse;">
       <thead>
-        <tr class="bg-[#1976d2] text-white">
+        <tr class="bg-[#fbc101] text-[#111]">
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Nro LIA</th>
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Estado</th>
           <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Ubicación</th>
@@ -51,24 +51,24 @@ async function eliminar(id) {
       </thead>
       <tbody>
         {#each movimientos as m, i}
-          <tr class="hover:bg-[#f1f7ff] transition-colors" class:border-b={i < movimientos.length - 1} class:border-gray-200={i < movimientos.length - 1}>
-            <td class="py-2.5 px-3.5">{m.nroLia}</td>
-            <td class="py-2.5 px-3.5">{m.estado}</td>
-            <td class="py-2.5 px-3.5">{m.ubicacion}</td>
-            <td class="py-2.5 px-3.5">{m.fecha}</td>
-            <td class="py-2.5 px-3.5">{m.comentario}</td>
-            <td class="py-2.5 px-3.5">{m.userName}</td>
+          <tr class="hover:bg-[#fef8e7] transition-colors" class:border-b={i < movimientos.length - 1} class:border-gray-200={i < movimientos.length - 1}>
+            <td class="py-2.5 px-3.5 text-[#111]">{m.nroLia}</td>
+            <td class="py-2.5 px-3.5 text-[#111]">{m.estado}</td>
+            <td class="py-2.5 px-3.5 text-[#111]">{m.ubicacion}</td>
+            <td class="py-2.5 px-3.5 text-[#111]">{m.fecha}</td>
+            <td class="py-2.5 px-3.5 text-[#111]">{m.comentario}</td>
+            <td class="py-2.5 px-3.5 text-[#111]">{m.userName}</td>
             <td class="py-2.5 px-3.5">
               {#if $user && $user.roles && $user.roles.includes('coordinador')}
                 <button 
                   on:click={() => window.location.hash = `/movimiento/editar/${m.id}`}
-                  class="bg-[#1976d2] text-white border-none rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm transition-colors duration-200 hover:bg-[#125ea2]"
+                  class="bg-[#dba800] text-[#111] border-2 border-[#dba800] rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm font-medium transition-colors duration-200 hover:bg-[#fbc101] hover:border-[#fbc101]"
                 >
                   Modificar
                 </button>
                 <button 
                   on:click={() => eliminar(m.id)}
-                  class="bg-[#c62828] text-white border-none rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm transition-colors duration-200 hover:bg-[#8e1c1c]"
+                  class="bg-[#c62828] text-white border-2 border-[#c62828] rounded px-3.5 py-1.5 mx-0.5 cursor-pointer text-sm font-medium transition-colors duration-200 hover:bg-[#8e1c1c] hover:border-[#8e1c1c]"
                 >
                   Eliminar
                 </button>

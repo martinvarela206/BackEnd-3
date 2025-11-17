@@ -98,7 +98,7 @@
   .formulario label {
     display: block;
     margin-bottom: 16px;
-    color: #1976d2;
+    color: #dba800;
     font-weight: 500;
   }
   .formulario input,
@@ -115,13 +115,13 @@
   }
   .formulario input:focus,
   .formulario select:focus {
-    border: 1.5px solid #1976d2;
+    border: 1.5px solid #dba800;
     outline: none;
   }
   .boton-form {
-    background: #1976d2;
-    color: #fff;
-    border: none;
+    background: #dba800;
+    color: #111;
+    border: 2px solid #dba800;
     border-radius: 4px;
     padding: 10px 22px;
     margin-right: 10px;
@@ -131,7 +131,8 @@
     transition: background 0.2s;
   }
   .boton-form:hover {
-    background: #125ea2;
+    background: #fbc101;
+    border-color: #fbc101;
   }
   .boton-cancelar {
     background: #bdbdbd;

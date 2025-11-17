@@ -14,12 +14,12 @@
 
 <style>
   .navbar {
-    background: #1976d2;
-    color: #fff;
+    background: #fbc101;
+    color: #111;
     padding: 0 0 0 0;
     margin-bottom: 32px;
-    box-shadow: 0 2px 8px #bbb;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-family: system-ui, -apple-system, sans-serif;
   }
   .navbar-content {
     display: flex;
@@ -36,7 +36,7 @@
     gap: 18px;
   }
   .navbar a {
-    color: #fff;
+    color: #111;
     text-decoration: none;
     font-weight: 500;
     padding: 7px 16px;
@@ -45,12 +45,13 @@
     font-size: 1em;
   }
   .navbar a:hover {
-    background: #125ea2;
+    background: #dba800;
   }
   .navbar .navbar-user {
     font-weight: 600;
     margin-right: 18px;
     letter-spacing: 0.5px;
+    color: #111;
   }
   .navbar .navbar-logout {
     background: #c62828;

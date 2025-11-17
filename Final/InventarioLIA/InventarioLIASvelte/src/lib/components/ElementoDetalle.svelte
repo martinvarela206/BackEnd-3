@@ -41,7 +41,7 @@ async function eliminarMovimiento(id) {
 {#if error}
   <div class="text-red-500 text-center p-4">{error}</div>
 {:else if elemento}
-  <h2 style="text-align:center; margin-top:40px; color:#1976d2;">Detalle del Elemento</h2>
+  <h2 style="text-align:center; margin-top:40px; color:#dba800;">Detalle del Elemento</h2>
   <table class="tabla-detalle">
     <tbody>
       <tr><th>Nro LIA</th><td>{elemento.nroLia}</td></tr>
@@ -52,7 +52,7 @@ async function eliminarMovimiento(id) {
     </tbody>
   </table>
 
-  <h3 style="text-align:center; color:#1976d2; margin-top:32px;">Movimientos asociados</h3>
+  <h3 style="text-align:center; color:#dba800; margin-top:32px;">Movimientos asociados</h3>
   <a href="#/movimiento/nuevo/{elemento.nroLia}" class="enlace-nuevo">Añadir Nuevo Movimiento</a>
   <table class="tabla-movimientos">
     <thead>
@@ -103,10 +103,11 @@ async function eliminarMovimiento(id) {
     padding: 10px 16px;
     border-bottom: 1px solid #eee;
     text-align: left;
+    color: #111;
   }
   .tabla-detalle th {
-    background: #1976d2;
-    color: #fff;
+    background: #fbc101;
+    color: #111;
     font-weight: 600;
     width: 160px;
   }
@@ -126,10 +127,11 @@ async function eliminarMovimiento(id) {
     padding: 10px 14px;
     border-bottom: 1px solid #eee;
     text-align: left;
+    color: #111;
   }
   .tabla-movimientos th {
-    background: #1976d2;
-    color: #fff;
+    background: #fbc101;
+    color: #111;
     font-weight: 600;
     letter-spacing: 1px;
   }
@@ -137,26 +139,28 @@ async function eliminarMovimiento(id) {
     border-bottom: none;
   }
   .tabla-movimientos tr:hover {
-    background: #f1f7ff;
+    background: #fef8e7;
   }
   .enlace-nuevo {
     display: inline-block;
     margin: 18px 0 18px 5%;
-    background: #43a047;
-    color: #fff;
+    background: #dba800;
+    color: #111;
     padding: 8px 18px;
     border-radius: 5px;
     text-decoration: none;
     font-weight: 500;
+    border: 2px solid #dba800;
     transition: background 0.2s;
   }
   .enlace-nuevo:hover {
-    background: #2e7031;
+    background: #fbc101;
+    border-color: #fbc101;
   }
   .boton-accion {
-    background: #1976d2;
-    color: #fff;
-    border: none;
+    background: #dba800;
+    color: #111;
+    border: 2px solid #dba800;
     border-radius: 4px;
     padding: 7px 18px;
     margin: 0 4px;
@@ -169,7 +173,8 @@ async function eliminarMovimiento(id) {
     box-shadow: 0 1px 4px #b3b3b3;
   }
   .boton-accion:hover:not([disabled]) {
-    background: #125ea2;
+    background: #fbc101;
+    border-color: #fbc101;
     box-shadow: 0 2px 8px #aaa;
   }
   .boton-eliminar {

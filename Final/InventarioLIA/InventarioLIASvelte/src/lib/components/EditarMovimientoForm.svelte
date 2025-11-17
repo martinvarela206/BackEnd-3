@@ -71,7 +71,7 @@ function cancelar() {
   .formulario label {
     display: block;
     margin-bottom: 16px;
-    color: #1976d2;
+    color: #dba800;
     font-weight: 500;
   }
   .formulario input, .formulario select {
@@ -86,13 +86,13 @@ function cancelar() {
     transition: border 0.2s;
   }
   .formulario input:focus, .formulario select:focus {
-    border: 1.5px solid #1976d2;
+    border: 1.5px solid #dba800;
     outline: none;
   }
   .boton-form {
-    background: #1976d2;
-    color: #fff;
-    border: none;
+    background: #dba800;
+    color: #111;
+    border: 2px solid #dba800;
     border-radius: 4px;
     padding: 10px 22px;
     margin-right: 10px;
@@ -102,7 +102,8 @@ function cancelar() {
     transition: background 0.2s;
   }
   .boton-form:hover {
-    background: #125ea2;
+    background: #fbc101;
+    border-color: #fbc101;
   }
   .boton-cancelar {
     background: #bdbdbd;
@@ -136,7 +137,7 @@ function cancelar() {
   {#if error}
     <div class="mensaje-error">{error}</div>
   {/if}
-  <h2 style="text-align:center; color:#1976d2; margin-bottom:24px;">Editar Movimiento</h2>
+  <h2 style="text-align:center; color:#dba800; margin-bottom:24px;">Editar Movimiento</h2>
   <form on:submit={handleSubmit}>
     <label>Nro LIA:
       <select bind:value={movimiento.nroLia} required>

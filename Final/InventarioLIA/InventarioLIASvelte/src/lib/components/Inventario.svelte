@@ -34,10 +34,10 @@
   };
 </script>
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-[#fef8e7]">
   <Navbar />
   {#if currentAlerta}
-    <div class="max-w-xl mx-auto my-4 p-3 bg-green-100 text-green-800 border border-green-300 rounded">
+    <div class="max-w-xl mx-auto my-4 p-3 bg-[#fbc101] text-[#111] border-2 border-[#dba800] rounded-lg font-medium shadow-md">
       {currentAlerta}
     </div>
   {/if}
