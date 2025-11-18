@@ -1,8 +1,9 @@
+// writeble() crea un store reactivo.
 import { writable } from 'svelte/store';
 
 // Simulación de usuario logeado para pruebas
 export const user = writable({
-  id: 1,
+  id: 3,
   nombre: 'Admin Demo',
   username: 'admin',
   roles: ['user_admin', 'coordinador', 'tecnico']

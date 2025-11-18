@@ -1,23 +1,23 @@
 package com.martindev.inventariolia.controllers;
 
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
-import jakarta.ejb.EJB;
+
 import com.martindev.inventariolia.Elementos;
 import com.martindev.inventariolia.ElementosFacade;
-import com.martindev.inventariolia.Movimientos;
-import com.martindev.inventariolia.MovimientosFacade;
-import com.martindev.inventariolia.Usuarios;
+
+import jakarta.ejb.EJB;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/elementos")
 public class ElementosServlet extends HttpServlet {
     @EJB
     private ElementosFacade elementosFacade;
-    @EJB
-    private MovimientosFacade movimientosFacade;
+    
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -46,24 +46,21 @@ public class ElementosServlet extends HttpServlet {
             e.setTipo(request.getParameter("tipo"));
             e.setDescripcion(request.getParameter("descripcion"));
             e.setCantidad(Integer.parseInt(request.getParameter("cantidad")));
-            elementosFacade.create(e);
-            
-            // Crearle el movimiento inicial por defecto
-            Movimientos m = new Movimientos();
-            m.setNroLia(e);
-            m.setNroUnsj(e.getNroUnsj());
-            m.setEstado("ingresado");
-            m.setUbicacion("Lab FB"); // Puedes ajustar la ubicación por defecto
-            m.setFecha(new java.util.Date());
-            m.setComentario("Ingreso inicial");
-            
-            // Asociarlo al usuario, por defecto sera admin:
-            Usuarios usuario = new Usuarios();
-            usuario.setId(1); // El id del usuario admin creado en tu script SQL
-            m.setUserId(usuario);
-            
-            movimientosFacade.create(m);
-            
+            // Obtener usuario de sesión y pasar al Facade para asociar el movimiento
+            jakarta.servlet.http.HttpSession session = request.getSession(false);
+            com.martindev.inventariolia.Usuarios usuarioEnSesion = null;
+            if (session != null) {
+                Object uobj = session.getAttribute("usuario");
+                if (uobj instanceof com.martindev.inventariolia.Usuarios) {
+                    usuarioEnSesion = (com.martindev.inventariolia.Usuarios) uobj;
+                }
+            }
+            if (usuarioEnSesion == null) {
+                // Requerir login: si no hay usuario en sesión redirigimos al login
+                response.sendRedirect(request.getContextPath() + "/login");
+                return;
+            }
+            elementosFacade.create(e, usuarioEnSesion);
             response.sendRedirect("elementos");
         } else if ("modificar".equals(accion)) {
             String nroLia = request.getParameter("nroLia");

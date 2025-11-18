@@ -1,5 +1,5 @@
 <script>
-  export let handleAnchorClick;
+  export let scrollSuave;
 </script>
 
 <style>
@@ -77,7 +77,7 @@
 </style>
 
 <section class="section-cards" id="lia2">
-  <a href="#inicio" class="card-button" on:click={handleAnchorClick}>
+  <a href="#inicio" class="card-button" on:click={scrollSuave}>
     <h4>ESPACIOS DEL LIA</h4>
     <div class="card-icon-circle">
       <img src="/assets/arrow.svg" alt="Espacios" />
@@ -87,7 +87,7 @@
       <img src="/assets/right-arrow.svg" alt="arrow" class="card-arrow" />
     </div>
   </a>
-  <a href="#inicio" class="card-button" on:click={handleAnchorClick}>
+  <a href="#inicio" class="card-button" on:click={scrollSuave}>
     <h4>PERSONAL DEL LIA</h4>
     <div class="card-icon-circle">
       <img src="/assets/card.svg" alt="Personal" />
@@ -97,7 +97,7 @@
       <img src="/assets/right-arrow.svg" alt="arrow" class="card-arrow" />
     </div>
   </a>
-  <a href="#inicio" class="card-button" on:click={handleAnchorClick}>
+  <a href="#inicio" class="card-button" on:click={scrollSuave}>
     <h4>ACTIVIDADES DEL LIA</h4>
     <div class="card-icon-circle">
       <img src="/assets/calendar.svg" alt="Actividades" />

@@ -1,6 +1,6 @@
 <script>
   import Logo from '../common/Logo.svelte';
-  export let handleAnchorClick;
+  export let scrollSuave;
 </script>
 
 <style>
@@ -86,10 +86,10 @@
       <span class="logo-text">Sistema LIA</span>
     </div>
     <nav class="nav-links">
-      <a href="#inicio" class="nav-link" on:click={handleAnchorClick}>Inicio</a>
-      <a href="#sistema-lia" class="nav-link" on:click={handleAnchorClick}>Sistema LIA</a>
-      <a href="#lia1" class="nav-link" on:click={handleAnchorClick}>LIA</a>
-      <a href="#lia2" class="nav-link" on:click={handleAnchorClick}>Personal</a>
+      <a href="#inicio" class="nav-link" on:click={scrollSuave}>Inicio</a>
+      <a href="#sistema-lia" class="nav-link" on:click={scrollSuave}>Sistema LIA</a>
+      <a href="#lia1" class="nav-link" on:click={scrollSuave}>LIA</a>
+      <a href="#lia2" class="nav-link" on:click={scrollSuave}>Personal</a>
     </nav>
   </div>
 </header>

@@ -7,7 +7,7 @@
   import Footer from '../common/Footer.svelte';
   
   // Smooth scroll para las anclas
-  function handleAnchorClick(e) {
+  function scrollSuave(e) {
     const href = e.currentTarget.getAttribute('href');
     if (href.startsWith('#')) {
       e.preventDefault();
@@ -38,9 +38,9 @@
   }
 </style>
 
-<Navbar {handleAnchorClick} />
+<Navbar {scrollSuave} />
 <HeroSection />
 <ComoFunciona />
 <LiaSection />
-<CardsSection {handleAnchorClick} />
+<CardsSection {scrollSuave} />
 <Footer />

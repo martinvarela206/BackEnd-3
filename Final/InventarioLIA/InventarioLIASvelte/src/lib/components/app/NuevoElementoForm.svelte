@@ -1,6 +1,6 @@
 <script>
   import { alerta, user } from '../../stores.js';
-  import { createElemento, createMovimiento } from '../../api/inventario.js';
+  import { createElemento } from '../../api/inventario.js';
 
   let elemento = {
     nroLia: '',
@@ -19,20 +19,11 @@
         return;
       }
       
-      // Crear el elemento
-      await createElemento(elemento);
+      // Crear el elemento (enviamos userId para que el backend asocie el movimiento)
+      await createElemento({ ...elemento, userId: $user.id });
       
-      // Crear automáticamente el movimiento inicial
-      const movimientoInicial = {
-        nroLia: { nroLia: elemento.nroLia },
-        userId: { id: $user.id },
-        fecha: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
-        ubicacion: 'Administración',
-        comentario: 'Ingreso Inicial',
-        estado: 'ingresado'
-      };
-      
-      await createMovimiento(movimientoInicial);
+      // No crear movimiento desde el frontend: el backend (ElementosFacade)
+      // se encarga de crear el movimiento inicial por defecto.
       
       alerta.set('Elemento creado exitosamente');
       window.location.hash = '/elementos';

@@ -6,8 +6,11 @@ import com.martindev.inventariolia.Elementos;
 import com.martindev.inventariolia.ElementosFacade;
 import com.martindev.inventariolia.Movimientos;
 import com.martindev.inventariolia.MovimientosFacade;
+import com.martindev.inventariolia.Usuarios;
+import com.martindev.inventariolia.UsuariosFacade;
 
 import jakarta.ejb.EJB;
+import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -28,6 +31,8 @@ public class ElementosResource {
     private ElementosFacade elementosFacade;
     @EJB
     private MovimientosFacade movimientosFacade;
+    @EJB
+    private UsuariosFacade usuariosFacade;
     @GET
     @Path("{nroLia}/ultima-ubicacion")
     public Response getUltimaUbicacion(@PathParam("nroLia") String nroLia) {
@@ -57,9 +62,63 @@ public class ElementosResource {
     }
 
     @POST
-    public Response create(Elementos elemento) {
-        elementosFacade.create(elemento);
-        return Response.status(Response.Status.CREATED).build();
+    public Response create(JsonObject jsonData) {
+        try {
+            Elementos e = new Elementos();
+
+            if (jsonData.containsKey("nroLia")) {
+                e.setNroLia(jsonData.getString("nroLia"));
+            }
+            if (jsonData.containsKey("nroUnsj")) {
+                e.setNroUnsj(jsonData.getString("nroUnsj", null));
+            }
+            if (jsonData.containsKey("tipo")) {
+                e.setTipo(jsonData.getString("tipo"));
+            }
+            if (jsonData.containsKey("descripcion")) {
+                e.setDescripcion(jsonData.getString("descripcion", null));
+            }
+            if (jsonData.containsKey("cantidad")) {
+                try {
+                    e.setCantidad(jsonData.getInt("cantidad"));
+                } catch (Exception ex) {
+                    // intentar parsear como string
+                    try {
+                        e.setCantidad(Integer.valueOf(jsonData.getString("cantidad")));
+                    } catch (Exception ex2) {
+                        // dejar nulo
+                    }
+                }
+            }
+
+            Usuarios usuario = null;
+            if (jsonData.containsKey("userId")) {
+                try {
+                    int userId = jsonData.getInt("userId");
+                    usuario = usuariosFacade.find(userId);
+                } catch (NumberFormatException nfe) {
+                    // si viene como objeto, intentar obtener id dentro del objeto
+                    try {
+                        if (jsonData.get("userId").getValueType() == jakarta.json.JsonValue.ValueType.OBJECT) {
+                            usuario = usuariosFacade.find(jsonData.getJsonObject("userId").getInt("id"));
+                        } else {
+                            usuario = usuariosFacade.find(Integer.parseInt(jsonData.getString("userId")));
+                        }
+                    } catch (Exception ex2) {
+                        usuario = null;
+                    }
+                }
+            }
+
+            if (usuario == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("userId is required to create an element and its initial movement").build();
+            }
+            elementosFacade.create(e, usuario);
+            return Response.status(Response.Status.CREATED).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
 
     @PUT
