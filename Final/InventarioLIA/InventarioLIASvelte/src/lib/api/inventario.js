@@ -1,11 +1,13 @@
+// Base de la API: usar variable de entorno VITE_API_BASE si está definida,
+// si no, usar el context-root correcto (observa la mayúscula 'LIA').
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080/InventarioLIA/api';
+
 // Obtener la última ubicación de un elemento por nroLia
 export async function getUltimaUbicacionElemento(nroLia) {
   const res = await fetch(`${API_BASE}/elementos/${nroLia}/ultima-ubicacion`);
   if (!res.ok) throw new Error('No se pudo obtener la última ubicación');
   return res.json();
 }
-// Funciones para consumir la API REST de InventarioLia
-const API_BASE = 'http://localhost:8080/InventarioLia/api';
 
 export async function getElementos() {
   const res = await fetch(`${API_BASE}/elementos`);
