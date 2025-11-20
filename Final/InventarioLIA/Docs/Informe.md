@@ -279,20 +279,55 @@ Además, cuando solo existe 1 movimiento para un elemento, ese movimiento no pue
 
 ![alt text](image-4.png)
 
-
-
-### b) Modo de Uso
-
-
-### c) Representación Visual
-
 ## Especificaciones Técnicas
 
 ### a) Diagrama Entidad–Relación
 
+![alt text](<Diagrama ER.svg>)
 
 ### b) Modelo Orientado a Objetos
 
+![alt text](<Diagrama OO.svg>)
+
+Descripción de las clases generadas (resumen):
+
+- **Elementos**
+	- Tabla: `elementos`
+	- Identificador: `nroLia` (PK, String)
+	- Atributos relevantes: `nroUnsj`, `tipo`, `descripcion`, `cantidad`.
+	- Relaciones: 1:N hacia `Movimientos` (campo `movimientosCollection`). Representa los recursos inventariados.
+	- Rol en el sistema: modelo central que identifica físicamente un elemento del inventario; se utiliza para listar, crear, editar y relacionar movimientos.
+
+- **Movimientos**
+	- Tabla: `movimientos`
+	- Identificador: `id` (PK, Integer, auto-generated)
+	- Atributos relevantes: `nroUnsj`, `estado`, `ubicacion`, `fecha`, `comentario`.
+	- Relaciones: ManyToOne hacia `Elementos` (`nroLia`) y hacia `Usuarios` (`userId`).
+	- Rol en el sistema: registra cada acción sobre un elemento (ingreso, traslado, baja, préstamo, etc.) y conserva trazabilidad (quién y cuándo).
+
+- **Usuarios**
+	- Tabla: `usuarios`
+	- Identificador: `id` (PK, Integer, auto-generated)
+	- Atributos: `nombre`, `password` (almacenado tal cual en este proyecto; mejora recomendada: hashing).
+	- Relaciones: N:M con `Roles` (tabla intermedia `usuario_roles`), 1:N con `Movimientos` (movimientos hechos por el usuario).
+	- Rol en el sistema: entidad de autenticación/autorización; usada en servlets para controlar acciones y asociar movimientos.
+
+- **Roles**
+	- Tabla: `roles`
+	- Identificador: `id` (PK, Integer)
+	- Atributo: `rol` (ej.: `user_admin`, `coordinador`, `tecnico`, `revisor`).
+	- Relación: N:M con `Usuarios` a través de la tabla `usuario_roles`.
+
+Capas de servicio / persistencia (Facades)
+
+- **AbstractFacade<T>**
+	- Clase genérica que centraliza operaciones CRUD básicas usando `EntityManager`.
+	- Métodos comunes: `create`, `edit`, `remove`, `find`, `findAll`, `findRange`, `count`.
+
+- **ElementosFacade, MovimientosFacade, UsuariosFacade, RolesFacade**
+	- Clases `@Stateless` que extienden `AbstractFacade` y exponen las operaciones de persistencia para cada entidad.
+	- Además contienen consultas específicas (p. ej. `MovimientosFacade.findByNroLia(Elementos)` para obtener el historial ordenado por fecha).
+	- Rol en el sistema: implementar la lógica mínima de negocio asociada a persistencia y servir como punto de integración para servlets y recursos REST.
 
 ### c) Descripción Tecnológica
 
@@ -306,6 +341,8 @@ Para poder cumplir con los requisitos de las cátedras Backend 3 y Frontend, se 
 
 El desarrollo del proyecto "Inventario LIA" ha sido una experiencia enriquecedora y desafiante. A pesar de haber trabajado previamente con arquitecturas como Laravel y .NET, trabajar con Java representó un reto significativo debido a su curva de aprendizaje más elevada. La cantidad de herramientas y tecnologías involucradas, como GlassFish, JPA, Maven, API Criteria, paquetes y dependencias, hizo que el proceso fuera complejo. Sin el apoyo de herramientas como la inteligencia artificial, habría sido difícil alcanzar los objetivos planteados.
 
-Uno de los aprendizajes más destacados fue la implementación de autenticación y autorización utilizando JWT. Este fue un tema completamente nuevo para mí, y el hecho de tener que desarrollarlo desde cero con una API propia añadió un nivel adicional de dificultad. Sin embargo, este desafío me permitió adquirir conocimientos valiosos y mejorar mis habilidades como desarrollador.
+La parte mas complicada ha sido comprender correctamente como funcionan las distintas capas de la aplicación, y como interactúan entre sí. Desde la persistencia con JPA y los facades, hasta la presentación con JSP y Servlets, cada capa tiene su propia lógica y responsabilidades. Entender estas interacciones fue crucial para poder implementar correctamente los requisitos funcionales.
 
-En conclusión, este proyecto no solo me permitió desarrollar una solución tecnológica útil para la gestión de inventarios, sino que también me ayudó a crecer profesionalmente al enfrentar y superar obstáculos técnicos significativos.
+Aunque no es directamente parte del proyecto para Backend 3, el añadido de la API RESTful y el frontend en Svelte permitió ampliar el alcance del proyecto, proporcionando una solución más moderna y flexible que puede integrarse con otros sistemas en el futuro.
+
+En conclusión, este proyecto no solo me permitió desarrollar una solución tecnológica útil para la gestión de inventarios, sino que también sentó las bases de mi crecimiento profesional al enfrentarme y superar obstáculos técnicos significativos.

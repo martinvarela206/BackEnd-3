@@ -1,0 +1,43 @@
+---
+config:
+  layout: elk
+---
+classDiagram
+  class Elementos {
+    +String nroLia
+    +String nroUnsj
+    +String tipo
+    +String descripcion
+    +Integer cantidad
+  }
+  class Movimientos {
+    +Integer id
+    +String nroLia
+    +String nroUnsj
+    +Integer userId
+    +String estado
+    +String ubicacion
+    +Date fecha
+    +String comentario
+  }
+  class Usuarios {
+    +Integer id
+    +String nombre
+    +String password
+  }
+  class Roles {
+    +Integer id
+    +String rol
+  }
+  class UsuarioRoles {
+    +Integer userId
+    +Integer rolId
+  }
+  Elementos "1" -- "0..*" Movimientos : "tiene"
+  Usuarios "1" -- "0..*" Movimientos : "registra"
+  Usuarios "1" -- "0..*" UsuarioRoles : "tiene"
+  Roles    "1" -- "0..*" UsuarioRoles : "asigna"
+  Movimientos --> Elementos : "nroLia (ManyToOne)"
+  Movimientos --> Usuarios  : "userId (ManyToOne)"
+  UsuarioRoles --> Usuarios : "userId FK"
+  UsuarioRoles --> Roles    : "rolId FK"

@@ -1,0 +1,42 @@
+erDiagram
+    ELEMENTOS {
+        VARCHAR nro_lia PK "PK"
+        VARCHAR nro_unsj
+        ENUM tipo
+        VARCHAR descripcion
+        INT cantidad
+    }
+
+    USUARIOS {
+        INT id PK "PK"
+        VARCHAR nombre
+        VARCHAR password
+    }
+
+    ROLES {
+        INT id PK "PK"
+        ENUM rol
+    }
+
+    USUARIO_ROLES {
+        INT user_id PK "PK, FK -> usuarios.id"
+        INT rol_id  PK "PK, FK -> roles.id"
+    }
+
+    MOVIMIENTOS {
+        INT id PK "PK"
+        VARCHAR nro_lia "FK -> elementos.nro_lia"
+        VARCHAR nro_unsj
+        INT user_id "FK -> usuarios.id"
+        ENUM estado
+        VARCHAR ubicacion
+        DATETIME fecha
+        VARCHAR comentario
+    }
+
+    %% Relaciones (cardinalidades)
+    ELEMENTOS ||--o{ MOVIMIENTOS : "1 tiene n"
+    USUARIOS  ||--o{ MOVIMIENTOS : "1 registra n"
+    USUARIOS  ||--o{ USUARIO_ROLES : "1 tiene n"
+    ROLES     ||--o{ USUARIO_ROLES : "1 asigna n"
+    %% Nota: USUARIO_ROLES actúa como tabla intermedia (M:N entre USUARIOS y ROLES)
