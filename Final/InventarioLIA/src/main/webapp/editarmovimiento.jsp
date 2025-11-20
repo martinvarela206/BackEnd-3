@@ -93,7 +93,7 @@
         <label>Nro LIA:
             <select name="nroLia" required>
                 <c:forEach var="e" items="${elementos}">
-                    <option value="${e.nroLia}" ${movimiento.nroLia == e.nroLia ? 'selected' : ''}>${e.nroLia}</option>
+                    <option value="${e.nroLia}" ${movimiento.nroLia.nroLia == e.nroLia ? 'selected' : ''}>${e.nroLia}</option>
                 </c:forEach>
             </select>
         </label>
